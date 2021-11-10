@@ -1,97 +1,130 @@
-
 package com.ceep.TruthCheck.data;
 
-import com.ceep.TruthCheck.exceptions.TXT.FileAccessException;
-import com.ceep.TruthCheck.exceptions.TXT.FileReadException;
-import com.ceep.TruthCheck.exceptions.TXT.FileWriteException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
+import com.ceep.TruthCheck.domain.*;
+import com.ceep.TruthCheck.exceptions.TXT.*;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 
-
-public class TXTDataAccess implements DataAccess{
+public class TXTDataAccess implements DataAccess {
 
     @Override
-    public void createStorage(String filename) throws FileWriteException{
-        File file = new File(filename);
-        try (PrintWriter output = new PrintWriter(file)){
-        } catch (FileNotFoundException e) {
-            throw new FileWriteException();
+    public void createStorage(String filename) throws FileWriteException {
+        Path path = Paths.get(filename);
+        try {
+            Files.createDirectories(path);
+
+            for (GameObjectType type : GameObjectType.values()) {
+                File file = new File(filename + "/" + type.name());
+                PrintWriter output = new PrintWriter(file);
+                output.close();
+            }
+
+        } catch (IOException ex) {
+            throw new FileWriteException("Error while creating the storage " + filename);
         }
     }
 
     @Override
-    public void deleteStorage(String filename) throws FileAccessException{
+    public void deleteStorage(String filename) throws FileAccessException {
         File file = new File(filename);
-        if(!file.delete()) throw new FileAccessException("Could not delete the file");
+        for (File subfile : file.listFiles()) {
+            if (!subfile.delete()) {
+                throw new FileAccessException("Could not delete the file "+subfile.getAbsolutePath());
+            }
+        }
     }
 
     @Override
-    public void writeData(String filename, String data) throws FileWriteException{
-        File file = new File(filename);
-        try (PrintWriter output = new PrintWriter(new FileWriter(file, true))){
+    public void writeData(String filename, String data, GameObjectType type) throws FileWriteException {
+        File file = new File(filename + "/" + type.name());
+        try (PrintWriter output = new PrintWriter(new FileWriter(file, true))) {
             output.println(data);
         } catch (FileNotFoundException e) {
-            throw new FileWriteException("Could not find the file");
+            throw new FileWriteException("Could not find the file "+file.getAbsolutePath());
         } catch (IOException e) {
-            throw new FileWriteException("Error while writting to "+filename);
+            throw new FileWriteException("Error while writting to " + filename);
         }
     }
 
     @Override
-    public void removeData(String filename, String data) throws FileWriteException{
-        File file = new File(filename);
-        File temp = new File("temp");
-        try (BufferedReader input = new BufferedReader(new FileReader(file));
-            PrintWriter output = new PrintWriter(new FileWriter(temp, true))){
-            String reading;
-            while ((reading = input.readLine()) != null) {
-                if (reading.equalsIgnoreCase(data)) {
-                    continue;
-                }
-                output.println(reading);
+    public void removeData(String filename, String data, GameObjectType type) throws FileWriteException, FileReadException {
+        File file = new File(filename + "/" + type.name());
+        List<String> filedata = readData(filename, type);
+
+        for (String entry : filedata) {
+            if (entry.equals(data)) {
+                continue;
             }
-            file.delete();
-            temp.renameTo(file);
-        } catch (FileNotFoundException e) {
-            throw new FileWriteException("Could not find the file");
-        } catch (IOException e) {
-            throw new FileWriteException("Error while writing to file "+filename);
+            writeData(filename, entry, type);
         }
     }
 
     @Override
-    public void modifyData(String storage_name, String data, String newData)  {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void modifyData(String filename, String data, String newData, GameObjectType type) throws FileWriteException, FileReadException {
+        File file = new File(filename + "/" + type.name());
+        List<String> filedata = readData(filename, type);
+
+        for (String entry : filedata) {
+            if (entry.equals(data)) {
+                writeData(filename, newData, type);
+                continue;
+            }
+            writeData(filename, entry, type);
+        }
     }
 
     @Override
-    public List<String> readData(String filename) throws FileReadException{
-        File file = new File(filename);
-        List<String> list = new ArrayList<>();
-        try (BufferedReader entrada = new BufferedReader(new FileReader(file))){   
+    public List<String> readData(String filename, GameObjectType type) throws FileReadException {
+        File file = new File(filename + "/" + type);
+        List<String> results = new ArrayList<>();
+        try (BufferedReader entrada = new BufferedReader(new FileReader(file))) {
             String reading;
             while ((reading = entrada.readLine()) != null) {
-                list.add(reading);
+                results.add(reading);
             }
         } catch (FileNotFoundException e) {
             throw new FileReadException("Could not find the file");
         } catch (IOException e) {
-            throw new FileReadException("Error while reading "+filename);
+            throw new FileReadException("Error while reading " + filename);
         }
-        return list;
+        return results;
     }
 
     @Override
-    public String searchData(String filename, String search) throws FileReadException{
-        List<String> data = readData(filename);
-        
+    public List<String> searchData(String filename, String search, GameObjectType type) throws FileReadException {
+        List<String> data = readData(filename, type);
+        List<String> results = new ArrayList<>();
+        for (String entry : data) {
+            if (entry.contains(search)) {
+                results.add(entry);
+            }
+        }
+        return results;
     }
-    
+
+    @Override
+    public GameObject parseObject(String stringifiedObject, GameObjectType type) throws TxtToObjectException {
+        GameObject parsedObj = null;
+        switch(type){
+            case Character:
+                parsedObj = new com.ceep.TruthCheck.domain.Character(stringifiedObject);
+                break;
+            case Item:
+                parsedObj = new Item(stringifiedObject);
+                break;
+            default:
+                throw new TxtToObjectException(type.name()+" cannot be created");
+        }
+        return parsedObj;
+    }
+
+    @Override
+    public List<GameObject> parseObjects(List<String> stringifiedObjects, GameObjectType datatype) throws TxtToObjectException {
+        List<GameObject> parsedObjs = new ArrayList();
+        for(String stringifiedObject : stringifiedObjects){
+            parsedObjs.add(parseObject(stringifiedObject, datatype));
+        }
+        return parsedObjs;
+    }
 }
