@@ -12,5 +12,9 @@ public class GameObject {
     }
     public GameObject(String id){
         this.id = Integer.parseInt(id);
-    }  
+    }
+    
+    public String toDBString() {
+    	return id+";";
+    }
 }

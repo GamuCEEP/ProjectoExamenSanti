@@ -6,10 +6,12 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-public class TXTDataAccess implements DataAccess {
+public class TXTDataBase implements DataBase {
 
     @Override
-    public void createStorage(String filename) throws FileWriteException {
+    public void createStorage(String filename) 
+    		throws FileWriteException {
+    	
         Path path = Paths.get(filename);
         try {
             Files.createDirectories(path);
@@ -26,7 +28,9 @@ public class TXTDataAccess implements DataAccess {
     }
 
     @Override
-    public void deleteStorage(String filename) throws FileAccessException {
+    public void deleteStorage(String filename) 
+    		throws FileAccessException {
+    	
         File file = new File(filename);
         for (File subfile : file.listFiles()) {
             if (!subfile.delete()) {
@@ -36,7 +40,9 @@ public class TXTDataAccess implements DataAccess {
     }
 
     @Override
-    public void writeData(String filename, String data, GameObjectType type) throws FileWriteException {
+    public void writeData(String filename, String data, GameObjectType type) 
+    		throws FileWriteException {
+    	
         File file = new File(filename + "/" + type.name());
         try (PrintWriter output = new PrintWriter(new FileWriter(file, true))) {
             output.println(data);
@@ -48,8 +54,9 @@ public class TXTDataAccess implements DataAccess {
     }
 
     @Override
-    public void removeData(String filename, String data, GameObjectType type) throws FileWriteException, FileReadException {
-        File file = new File(filename + "/" + type.name());
+    public void removeData(String filename, String data, GameObjectType type) 
+    		throws FileWriteException, FileReadException {
+    	
         List<String> filedata = readData(filename, type);
 
         for (String entry : filedata) {
@@ -61,8 +68,9 @@ public class TXTDataAccess implements DataAccess {
     }
 
     @Override
-    public void modifyData(String filename, String data, String newData, GameObjectType type) throws FileWriteException, FileReadException {
-        File file = new File(filename + "/" + type.name());
+    public void modifyData(String filename, String data, String newData, GameObjectType type) 
+    		throws FileWriteException, FileReadException {
+    	
         List<String> filedata = readData(filename, type);
 
         for (String entry : filedata) {
@@ -75,7 +83,9 @@ public class TXTDataAccess implements DataAccess {
     }
 
     @Override
-    public List<String> readData(String filename, GameObjectType type) throws FileReadException {
+    public List<String> readData(String filename, GameObjectType type) 
+    		throws FileReadException {
+    	
         File file = new File(filename + "/" + type);
         List<String> results = new ArrayList<>();
         try (BufferedReader entrada = new BufferedReader(new FileReader(file))) {
@@ -114,14 +124,14 @@ public class TXTDataAccess implements DataAccess {
                 parsedObj = new Item(stringifiedObject);
                 break;
             default:
-                throw new TxtToObjectException(type.name()+" cannot be created");
+                throw new TxtToObjectException(type.name()+" type object cannot be created");
         }
         return parsedObj;
     }
 
     @Override
     public List<GameObject> parseObjects(List<String> stringifiedObjects, GameObjectType datatype) throws TxtToObjectException {
-        List<GameObject> parsedObjs = new ArrayList();
+        List<GameObject> parsedObjs = new ArrayList<>();
         for(String stringifiedObject : stringifiedObjects){
             parsedObjs.add(parseObject(stringifiedObject, datatype));
         }

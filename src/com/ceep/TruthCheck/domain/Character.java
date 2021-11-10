@@ -67,7 +67,7 @@ public class Character extends GameObject{
 //    }
 
     @Override
-    public String toString() {
+    public String toDBString() {
         StringBuilder stringifiedChar = new StringBuilder();
         
         stringifiedChar.append(id).append(FIELD_SEPARATOR);

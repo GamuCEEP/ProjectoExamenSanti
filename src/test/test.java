@@ -1,30 +1,31 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package test;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.ceep.TruthCheck.presentation.ConsoleMenuUtil;
+import com.ceep.TruthCheck.util.Pair;
+import com.ceep.TruthCheck.util.Procedure;
 
-/**
- *
- * @author Alumno Mañana
- */
 public class test {
 
     public static void main(String[] args) {
-        try {
-            String textofecha = "21/04/2021";
-            DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-            Date fecha = df.parse(textofecha);
-            
-            System.out.println(fecha);
-        } catch (ParseException ex) {
-        }
+    	
+    	Pair<String, Procedure>[] options = new Pair[3];
 
+    	options[0] = new Pair<>("Saludar", test::saludo);
+    	options[1] = new Pair<>("Despedir", test::despido);
+    	options[2] = new Pair<>("patata", test::patata);
+    
+    	ConsoleMenuUtil.menu(false, options);
     }
+    
+    public static void saludo() {
+    	System.out.println("hola");
+    }
+    public static void despido() {
+    	System.out.println("Adios");
+    }
+    public static void patata() {
+    	System.out.println("patata");
+    }
+    
 }

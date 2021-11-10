@@ -19,7 +19,7 @@ public class Item extends GameObject{
     }
 
     @Override
-    public String toString() {
+    public String toDBString() {
         StringBuilder stringifiedItem = new StringBuilder();
         
         stringifiedItem.append(name).append(FIELD_SEPARATOR);
