@@ -16,6 +16,7 @@ public class test {
     	options[2] = new Pair<>("patata", test::patata);
     
     	ConsoleMenuUtil.menu(false, options);
+        
     }
     
     public static void saludo() {

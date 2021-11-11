@@ -37,9 +37,9 @@ public class ConsoleMenuUtil {
 				break;
 				
 			}catch(IndexOutOfBoundsException e) {
-				System.out.println("Por favor introduce un número del "+ lowerLimit +" al "+size);}
+				System.out.println("Por favor introduce un nÃºmero del "+ lowerLimit +" al "+size);}
 			catch (NumberFormatException e) {
-				System.out.println("Por favor introduce un número");}
+				System.out.println("Por favor introduce un nÃºmero");}
 		}
 		input.close();
 		return option-1;

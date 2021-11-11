@@ -112,29 +112,4 @@ public class TXTDataBase implements DataBase {
         }
         return results;
     }
-
-    @Override
-    public GameObject parseObject(String stringifiedObject, GameObjectType type) throws TxtToObjectException {
-        GameObject parsedObj = null;
-        switch(type){
-            case Character:
-                parsedObj = new com.ceep.TruthCheck.domain.Character(stringifiedObject);
-                break;
-            case Item:
-                parsedObj = new Item(stringifiedObject);
-                break;
-            default:
-                throw new TxtToObjectException(type.name()+" type object cannot be created");
-        }
-        return parsedObj;
-    }
-
-    @Override
-    public List<GameObject> parseObjects(List<String> stringifiedObjects, GameObjectType datatype) throws TxtToObjectException {
-        List<GameObject> parsedObjs = new ArrayList<>();
-        for(String stringifiedObject : stringifiedObjects){
-            parsedObjs.add(parseObject(stringifiedObject, datatype));
-        }
-        return parsedObjs;
-    }
 }

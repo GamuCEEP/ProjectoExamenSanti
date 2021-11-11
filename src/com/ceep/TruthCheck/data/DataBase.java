@@ -71,22 +71,5 @@ public interface DataBase {
      */
     public List<String> searchData(String storage_name, String search, GameObjectType datatype) 
     		throws ReadException;
-    /**
-     * Recive un objeto en forma de texto y lo convierte al objeto del tipo que sea
-     * @param stringifiedObject el objeto en forma de texto
-     * @param datatype tipo de objeto que se va a crear
-     * @return el objeto del texto pasado
-     * @throws com.ceep.TruthCheck.exceptions.ObjectCreationException
-     */
-    public GameObject parseObject(String stringifiedObject, GameObjectType datatype) 
-    		throws ObjectCreationException;
-    /**
-     * Recibe una lista de objetos en forma de texto y lo convierte a una lista de los objetos
-     * @param stringifiedObjects lista con objetos en forma de texto
-     * @param datatype tipo de objeto que se va a crear
-     * @return la lista con los textos convertidos a objeto
-     * @throws ObjectCreationException 
-     */
-    public List<GameObject> parseObjects(List<String> stringifiedObjects, GameObjectType datatype) 
-    		throws ObjectCreationException;
+   
 }
