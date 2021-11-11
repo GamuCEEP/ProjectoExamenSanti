@@ -18,7 +18,15 @@ public class DataAccess {
 			System.out.println("config file could not e created");
 		}
 	}
-
+	
+	/**
+	 * Devuelve una lista con todas las bases de datos cargadas
+	 * @return
+	 * @throws ReadException
+	 */
+	public List<String> listDatabases() throws ReadException{
+		return database.readData("", "config");
+	}
 	/**
 	 * Selecciona una base de datos para su uso continuo
 	 * 
