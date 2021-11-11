@@ -22,6 +22,7 @@ public class Item extends GameObject{
     public String toDBString() {
         StringBuilder stringifiedItem = new StringBuilder();
         
+        stringifiedItem.append(id).append(FIELD_SEPARATOR);
         stringifiedItem.append(name).append(FIELD_SEPARATOR);
         stringifiedItem.append(description).append(FIELD_SEPARATOR);
         

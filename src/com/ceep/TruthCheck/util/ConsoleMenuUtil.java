@@ -1,9 +1,6 @@
-package com.ceep.TruthCheck.presentation;
+package com.ceep.TruthCheck.util;
 
 import java.util.Scanner;
-
-import com.ceep.TruthCheck.util.Pair;
-import com.ceep.TruthCheck.util.Procedure;
 
 public class ConsoleMenuUtil {
 

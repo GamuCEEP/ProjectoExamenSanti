@@ -7,150 +7,266 @@ import java.util.List;
 
 public class DataAccess {
 
-    private final DataBase database;
+	private final DataBase database;
+	private String selectedDatabase;
 
-    public DataAccess(DataBase database) {
-        this.database = database;
-    }
+	public DataAccess(DataBase database) {
+		this.database = database;
+		try {
+			database.createTable("", "config");
+		} catch (WriteException e) {
+			System.out.println("config file could not e created");
+		}
+	}
 
-    /**
-     * Crea e inicializa una base de datos
-     *
-     * @param storage_name nombre de la base de datos
-     * @throws com.ceep.TruthCheck.exceptions.WriteException
-     */
-    public void createStorage(String storage_name) throws WriteException {
-        database.createStorage(storage_name);
-    }
+	/**
+	 * Selecciona una base de datos para su uso continuo
+	 * 
+	 * @param databaseName
+	 * @throws ReadException
+	 * @throws DatabaseNotFoundException
+	 */
+	public void selectDatabase(String databaseName) throws ReadException, DatabaseNotFoundException {
+		if (!database.readData("", "config").contains(databaseName))
+			throw new DatabaseNotFoundException("Could not find database " + databaseName);
+		selectedDatabase = databaseName;
 
-    /**
-     * Borra una base de datos
-     *
-     * @param storage_name nombre de la base de datos
-     * @throws com.ceep.TruthCheck.exceptions.AccessException
-     */
-    public void deleteStorage(String storage_name) throws AccessException {
-        database.deleteStorage(storage_name);
-    }
+	}
 
-    /**
-     * Escribe datos en la base de datos
-     *
-     * @param databaseName nombre de la base de datos
-     * @param data datos para guardar
-     * @throws com.ceep.TruthCheck.exceptions.WriteException
-     */
-    public void writeData(String databaseName, GameObject data) throws WriteException {
-        database.writeData(databaseName, data.toDBString(), GameObjectType.valueOf(data.getClass().getSimpleName()));
-    }
+	/**
+	 * Añade la base de datos dada con sus tablas al registro de bases de datos
+	 * 
+	 * @param databaseName base de datos que se va a añadir
+	 * @param tableNames   array de los nombres de las tablas
+	 * @throws WriteException
+	 * @throws DatabaseNotFoundException
+	 */
+	public void addDatabase(String databaseName, String... tableNames)
+			throws WriteException, DatabaseNotFoundException {
+		StringBuilder databaseInfo = new StringBuilder();
+		databaseInfo.append(databaseName).append("[");
+		for (String tableName : tableNames) {
+			try {
+				database.readData(databaseName, tableName);
+				databaseInfo.append(tableName).append(";");
 
-    /**
-     * Elimina la entrada de la base de datos
-     *
-     * @param storage_name nombre de la base de datos
-     * @param data datos que eliminar
-     * @throws com.ceep.TruthCheck.exceptions.WriteException
-     * @throws com.ceep.TruthCheck.exceptions.ReadException
-     */
-    public void removeData(String storage_name, GameObject data) throws WriteException, ReadException {
-        database.removeData(storage_name, data.toDBString(), GameObjectType.valueOf(data.getClass().getSimpleName()));
-    }
+			} catch (ReadException e) {
+				throw new DatabaseNotFoundException("Could not find database " + databaseName);
+			}
+		}
+		database.writeData("", "config", databaseInfo.toString());
+	}
 
-    /**
-     * Modifica datos en la base de datos.<br><br>
-     * Si el tipo de <b>data</b> es distinto de <b>newData</b> lanza un warning
-     * pero el programa sigue, los tipos deberï¿½an ser iguales para evitar
-     * problemas
-     *
-     * @param storage_name nombre de la base de datos
-     * @param data dato que modificar
-     * @param newData dato modificado
-     * @throws com.ceep.TruthCheck.exceptions.WriteException
-     * @throws com.ceep.TruthCheck.exceptions.ReadException
-     */
-    public void modifyData(String storage_name, GameObject data, GameObject newData)
-            throws WriteException, ReadException {
+	/**
+	 * Crea e inicializa una base de datos
+	 *
+	 * @param databaseName nombre de la base de datos
+	 * @throws WriteException
+	 */
+	public void createDatabase(String databaseName) throws WriteException {
+		StringBuilder databaseInfo = new StringBuilder();
 
-        if (!data.getClass().getSimpleName().equals(newData.getClass().getSimpleName())) {
-            System.err.println("Misuse of datatypes, " + data.getClass().getSimpleName() + " and "
-                    + newData.getClass().getSimpleName() + " should be equal, this may cause an error later");
-        }
+		database.createDatabase(databaseName);
+		databaseInfo.append(databaseName).append("[");
+		for (GameObjectType type : GameObjectType.values()) {
+			database.createTable(databaseName, type.name());
+			databaseInfo.append(type.name()).append(";");
+		}
+		database.writeData("", "config", databaseInfo.toString());
 
-        database.modifyData(storage_name, data.toDBString(), newData.toDBString(),
-                GameObjectType.valueOf(data.getClass().getSimpleName()));
-    }
+	}
 
-    /**
-     * Devuelve todos las entradas de un mismo tipo de una base de datos
-     *
-     * @param storage_name nombre de la base de datos
-     * @param datatype tipo de dato de las entradas
-     * @return un ArrayList&lt;GameObject&gt; con todas las entradas en forma de
-     * GameObject
-     * @throws com.ceep.TruthCheck.exceptions.ReadException
-     * @throws com.ceep.TruthCheck.exceptions.ObjectCreationException
-     */
-    public List<GameObject> readData(String storage_name, GameObjectType datatype)
-            throws ReadException, ObjectCreationException {
-        return parseObjects(database.readData(storage_name, datatype), datatype);
-    }
+	/**
+	 * Borra una base de datos
+	 *
+	 * @param databaseName nombre de la base de datos
+	 * @throws AccessException
+	 */
+	public void deleteDatabase(String databaseName) throws AccessException {
+		database.deleteDatabase(databaseName);
+	}
 
-    /**
-     * Busca y devuelve el dato que mas se ajuste al texto de busqueda
-     *
-     * @param storage_name nombre de la base de datos
-     * @param search texto de busqueda
-     * @param datatype tipo de dato que se va a buscar
-     * @return el dato en forma de <b>GameObject</b> que mas se ajuste al texto
-     * de busqueda
-     * @throws com.ceep.TruthCheck.exceptions.ReadException
-     * @throws com.ceep.TruthCheck.exceptions.ObjectCreationException
-     */
-    public List<GameObject> searchData(String storage_name, String search, GameObjectType datatype)
-            throws ReadException, ObjectCreationException {
-        return parseObjects(database.searchData(storage_name, search, datatype), datatype);
-    }
+	/**
+	 * Borra la base de datos seleccionada
+	 * 
+	 * @throws AccessException
+	 */
+	public void deleteDatabase() throws AccessException {
+		database.deleteDatabase(selectedDatabase);
+	}
 
-    /**
-     * Recive un objeto en forma de texto y lo convierte al objeto del tipo que
-     * sea
-     *
-     * @param stringifiedObject el objeto en forma de texto
-     * @param type el tipo al que se convierte
-     * @return el objeto del texto pasado
-     * @throws ObjectCreationException
-     */
-    public GameObject parseObject(String stringifiedObject, GameObjectType type) 
-            throws ObjectCreationException {
-        GameObject parsedObj = null;
-        switch (type) {
-            case Character:
-                parsedObj = new com.ceep.TruthCheck.domain.Character(stringifiedObject);
-                break;
-            case Item:
-                parsedObj = new Item(stringifiedObject);
-                break;
-            default:
-                throw new ObjectCreationException(type.name() + " type object cannot be created");
-        }
-        return parsedObj;
-    }
+	/**
+	 * Escribe datos en la base de datos
+	 *
+	 * @param databaseName nombre de la base de datos
+	 * @param data         datos para guardar
+	 * @throws WriteException
+	 */
+	public void writeData(String databaseName, GameObject data) throws WriteException {
+		database.writeData(databaseName, data.getClass().getSimpleName(), data.toDBString());
+	}
 
-    /**
-     * Recibe una lista de objetos en forma de texto y lo convierte a una lista
-     * de los objetos
-     *
-     * @param stringifiedObjects lista con objetos en forma de texto
-     * @param datatype tipo de objeto que se va a crear
-     * @return la lista con los textos convertidos a objeto
-     * @throws ObjectCreationException
-     */
-    public List<GameObject> parseObjects(List<String> stringifiedObjects, GameObjectType datatype) 
-            throws ObjectCreationException {
-        List<GameObject> parsedObjs = new ArrayList<>();
-        for (String stringifiedObject : stringifiedObjects) {
-            parsedObjs.add(parseObject(stringifiedObject, datatype));
-        }
-        return parsedObjs;
-    }
+	/**
+	 * Escribe en la base de datos seleccionada
+	 * 
+	 * @param data datos para guardar
+	 * @throws WriteException
+	 */
+	public void writeData(GameObject data) throws WriteException {
+		database.writeData(selectedDatabase, data.getClass().getSimpleName(), data.toDBString());
+	}
+
+	/**
+	 * Elimina la entrada de la base de datos
+	 *
+	 * @param databaseName nombre de la base de datos
+	 * @param data         datos que eliminar
+	 * @throws WriteException
+	 * @throws ReadException
+	 */
+
+	public void removeData(String databaseName, GameObject data) throws WriteException, ReadException {
+		database.removeData(databaseName, data.getClass().getSimpleName(), data.toDBString());
+	}
+
+	/**
+	 * Borra datos de la base de datos seleccionada
+	 * 
+	 * @param data datos que eliminar
+	 * @throws WriteException
+	 * @throws ReadException
+	 */
+	public void removeData(GameObject data) throws WriteException, ReadException {
+		database.removeData(selectedDatabase, data.getClass().getSimpleName(), data.toDBString());
+	}
+
+	/**
+	 * Modifica datos en la base de datos.<br>
+	 * <br>
+	 * Si el tipo de <b>data</b> es distinto de <b>newData</b> lanza un warning pero
+	 * el programa sigue, los tipos deberï¿½an ser iguales para evitar problemas
+	 *
+	 * @param databaseName nombre de la base de datos
+	 * @param data         dato que modificar
+	 * @param newData      dato modificado
+	 * @throws WriteException
+	 * @throws ReadException
+	 */
+	public void modifyData(String databaseName, GameObject data, GameObject newData)
+			throws WriteException, ReadException {
+		database.modifyData(databaseName, data.getClass().getSimpleName(), data.toDBString(), newData.toDBString());
+	}
+
+	/**
+	 * Modifica datos en la base de datos seleccionada
+	 * 
+	 * @param data    dato que modificar
+	 * @param newData dato modificado
+	 * @throws WriteException
+	 * @throws ReadException
+	 */
+	public void modifyData(GameObject data, GameObject newData) throws WriteException, ReadException {
+		database.modifyData(selectedDatabase, data.getClass().getSimpleName(), data.toDBString(), newData.toDBString());
+	}
+
+	/**
+	 * Devuelve todos las entradas de un mismo tipo de una base de datos
+	 *
+	 * @param databaseName nombre de la base de datos
+	 * @param datatype     tipo de dato de las entradas
+	 * @return un ArrayList&lt;GameObject&gt; con todas las entradas en forma de
+	 *         GameObject
+	 * @throws ReadException
+	 * @throws ObjectCreationException
+	 */
+	public List<GameObject> readData(String databaseName, GameObjectType datatype)
+			throws ReadException, ObjectCreationException {
+		return parseObjects(database.readData(databaseName, datatype.name()), datatype);
+	}
+
+	/**
+	 * Devuelve todos las entradas de un mismo tipo de la base de datos seleccionada
+	 * 
+	 * @param datatype tipo de dato de las entradas
+	 * @return un ArrayList&lt;GameObject&gt; con todas las entradas en forma de
+	 *         GameObject
+	 * @throws ReadException
+	 * @throws ObjectCreationException
+	 */
+	public List<GameObject> readData(GameObjectType datatype) throws ReadException, ObjectCreationException {
+		return parseObjects(database.readData(selectedDatabase, datatype.name()), datatype);
+	}
+
+	/**
+	 * Busca y devuelve el dato que mas se ajuste al texto de busqueda
+	 *
+	 * @param databaseName nombre de la base de datos
+	 * @param search       texto de busqueda
+	 * @param datatype     tipo de dato que se va a buscar
+	 * @return el dato en forma de <b>GameObject</b> que mas se ajuste al texto de
+	 *         busqueda
+	 * @throws ReadException
+	 * @throws ObjectCreationException
+	 */
+	public List<GameObject> searchData(String databaseName, String search, GameObjectType datatype)
+			throws ReadException, ObjectCreationException {
+		return parseObjects(database.searchData(databaseName, datatype.name(), search), datatype);
+	}
+
+	/**
+	 * Busca y devuelve el dato que mas se ajuste al texto de busqueda en la base de
+	 * datos seleccionada
+	 * 
+	 * @param search   texto de busqueda
+	 * @param datatype tipo de dato que se va a buscar
+	 * @return el dato en forma de <b>GameObject</b> que mas se ajuste al texto de
+	 *         busqueda
+	 * @throws ReadException
+	 * @throws ObjectCreationException
+	 */
+	public List<GameObject> searchData(String search, GameObjectType datatype)
+			throws ReadException, ObjectCreationException {
+		return parseObjects(database.searchData(selectedDatabase, datatype.name(), search), datatype);
+	}
+
+	/**
+	 * Recive un objeto en forma de texto y lo convierte al objeto del tipo que sea
+	 *
+	 * @param stringifiedObject el objeto en forma de texto
+	 * @param type              el tipo al que se convierte
+	 * @return el objeto del texto pasado
+	 * @throws ObjectCreationException
+	 */
+	public GameObject parseObject(String stringifiedObject, GameObjectType type) throws ObjectCreationException {
+		GameObject parsedObj = null;
+		switch (type) {
+		case Character:
+			parsedObj = new com.ceep.TruthCheck.domain.Character(stringifiedObject);
+			break;
+		case Item:
+			parsedObj = new Item(stringifiedObject);
+			break;
+		default:
+			throw new ObjectCreationException(type.name() + " type object cannot be created");
+		}
+		return parsedObj;
+	}
+
+	/**
+	 * Recibe una lista de objetos en forma de texto y lo convierte a una lista de
+	 * los objetos
+	 *
+	 * @param stringifiedObjects lista con objetos en forma de texto
+	 * @param datatype           tipo de objeto que se va a crear
+	 * @return la lista con los textos convertidos a objeto
+	 * @throws ObjectCreationException
+	 */
+	public List<GameObject> parseObjects(List<String> stringifiedObjects, GameObjectType datatype)
+			throws ObjectCreationException {
+		List<GameObject> parsedObjs = new ArrayList<>();
+		for (String stringifiedObject : stringifiedObjects) {
+			parsedObjs.add(parseObject(stringifiedObject, datatype));
+		}
+		return parsedObjs;
+	}
 }
