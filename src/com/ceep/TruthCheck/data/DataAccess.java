@@ -18,6 +18,9 @@ public class DataAccess {
 			System.out.println("config file could not e created");
 		}
 	}
+	public String getSelectedDatabase() {
+		return selectedDatabase;
+	}
 	
 	/**
 	 * Devuelve una lista con todas las bases de datos cargadas

@@ -12,14 +12,14 @@ public class Character extends GameObject{
     private final List<Item> equipment;
     
     public Character(int id, String name, String description, List<Item> inventory, List<Item> equipment){
-        super(id);
+        super();
         this.name = name;
         this.description = description;
         this.inventory = inventory;
         this.equipment = equipment;
     }
     public Character(String stringifiedChar){
-        super(stringifiedChar.split(";")[0]);
+        super();
         String[] chardata = stringifiedChar.split(";");
         this.name = chardata[1];
         this.description = chardata[2];

@@ -35,6 +35,9 @@ public class BusinesManager {
 	public void deleteDatabase(String database) throws AccessException {
 		data.deleteDatabase(database);
 	}
+	public void deleteDatabase() throws AccessException {
+		data.deleteDatabase();
+	}
 
 	public List<String> listDatabases() throws ReadException {
 		return data.listDatabases();
@@ -47,13 +50,22 @@ public class BusinesManager {
 	public void addEntry(String database, GameObject entry) throws WriteException {
 		data.writeData(database, entry);
 	}
+	public void addEntry(GameObject entry) throws WriteException {
+		data.writeData(entry);
+	}
 
 	public void deleteEntry(String database, GameObject entry) throws WriteException, ReadException {
 		data.removeData(database, entry);
 	}
+	public void deleteEntry(GameObject entry) throws WriteException, ReadException {
+		data.removeData(entry);
+	}
 
 	public void modifyEntry(String database, GameObject oldEntry, GameObject newEntry) throws WriteException, ReadException {
 		data.modifyData(database,oldEntry, newEntry);
+	}
+	public void modifyEntry(GameObject oldEntry, GameObject newEntry) throws WriteException, ReadException {
+		data.modifyData(oldEntry, newEntry);
 	}
 
 	public List<GameObject> searchEntry(String database, String search) throws ReadException {
@@ -67,7 +79,12 @@ public class BusinesManager {
 			}
 		}
 		return result;
-		
+	}
+	public List<GameObject> searchEntry(String search) throws ReadException {
+		return searchEntry(data.getSelectedDatabase(),search);
+	}
+	public String getConectedDatabase() {
+		return data.getSelectedDatabase();
 	}
 
 }

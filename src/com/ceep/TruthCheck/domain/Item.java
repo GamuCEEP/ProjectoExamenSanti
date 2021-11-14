@@ -6,13 +6,13 @@ public class Item extends GameObject{
     private final String name;
     private final String description;
     
-    public Item(int id, String name, String description){
-        super(id);
+    public Item(String name, String description){
+    	super();
         this.name = name;
         this.description = description;
     }
     public Item(String stringifiedItem){
-        super(stringifiedItem.split(";")[0]);
+        super();
         String[] itemdata = stringifiedItem.split(";");        
         this.name = itemdata[1];
         this.description = itemdata[2];
