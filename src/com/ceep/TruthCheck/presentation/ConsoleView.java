@@ -29,7 +29,7 @@ public class ConsoleView {
     
     /*Menu principal
     Bienvenido al gestor de personajes
-    ¿Que queiere hacer?
+    ï¿½Que queiere hacer?
     
     1 - Crear base de datos
     2 - Listar bases de datos
@@ -37,14 +37,14 @@ public class ConsoleView {
     4 - Conectar a base de datos
     */
     public void mainMenu() {
-    	String prompt = "Bienvenido al gestor de personajes\n¿Que quieres hacer?";
+    	String prompt = "Bienvenido al gestor de personajes\nï¿½Que quieres hacer?";
     	
     	List<Option> options = new ArrayList<Option>();
 
-    	options.add(new Option("Crear base de datos", this::createDatabase));
-    	options.add(new Option("Listar bases de datos", this::listDatabases));
-    	options.add(new Option("Borrar base de datos", this::deleteDatabase));
-    	options.add(new Option("Conectar a base de datos", this::conectToDatabase));
+    	options.add(new Option("Crear nueva partida", this::createDatabase));
+    	options.add(new Option("Listar partidas", this::listDatabases));
+    	options.add(new Option("Borrar partida", this::deleteDatabase));
+    	options.add(new Option("Jugar partida", this::conectToDatabase));
     	
     	ConsoleMenuUtil.menu(true, options, prompt);
     	
@@ -52,12 +52,12 @@ public class ConsoleView {
     
     public void createDatabase() {
     	while(true) {
-    		String database = input.getText("¿Como se va a llamar la nueva base de datos?");
+    		String database = input.getText("Ponle un nombre a tu partida");
         	try {
     			app.createDatabase(database);
     			return;
     		} catch (WriteException e) {
-    			System.out.println("No se puede crear la base de datos llamada "+database+", por favor prueba otro nombre");
+    			System.out.println("No se puede crear la partida "+database+", por favor prueba otro nombre");
     		}
     	}
     }
@@ -68,56 +68,56 @@ public class ConsoleView {
 				System.out.println(i++ + " - "+database);
 			}
 		} catch (ReadException e) {
-			System.out.println("El archivo \"config\" no se ha encontrado o esta dañado");
+			System.out.println("El archivo \"config\" no se ha encontrado o esta tiene un error");
 		}
     	
     }
     public void deleteDatabase() {
     	while(true) {
-    		String database = input.getText("¿Que base de datos quieres borrar?");
+    		String database = input.getText("Elige la partida que quieres borrar");
     		listDatabases();
         	try {
         		app.deleteDatabase(database);
     			return;
     		} catch (AccessException e) {
-				System.out.println("No se pudo borrar la base de datos");
+				System.out.println("No se pudo borrar la partida");
 			}
     	}
     }
     public void conectToDatabase() {
-    	String database = input.getText("¿A que base de datos te quieres conectar?");
+    	String database = input.getText("Elige que partida quieres jugar");
     	listDatabases();
     	try {
 			app.conectToDatabase(database);
 		} catch (ReadException e) {
-			System.out.println("El archivo \"config\" no se ha encontrado o esta dañado");
+			System.out.println("El archivo \"config\" no se ha encontrado o tiene un error");
 		} catch (DatabaseNotFoundException e) {
-			System.out.println("No se encuentra la base de datos, intentalo de nuevo");
+			System.out.println("No se encuentra la partida, intentalo de nuevo");
 		}
     }
     /*Menu de base de datos
     Estas en ${databaseName}
-    ¿Que quieres hacer?
+    ï¿½Que quieres hacer?
     
-    1 - Añadir un elemento
+    1 - Aï¿½adir un elemento
     2 - Eliminar un elemento
     3 - Modificar un elemento
     4 - Ver un elemento
     */
     public void databaseMenu() {
-    	String prompt = "Estas en "+app.getConectedDatabase() + "\n¿Que quieres hacer?";
+    	String prompt = "Estas en "+app.getConectedDatabase() + "\nï¿½Que quieres hacer?";
     	
     	List<Option> options = new ArrayList<Option>();
 
-    	options.add(new Option("Añadir una entrada", this::addEntry));
-    	options.add(new Option("Eliminar una entrada", this::deleteEntry));
-    	options.add(new Option("Modificar una entrada", this::modifyEntry));
-    	options.add(new Option("Ver una entrada", this::showEntry));
+    	options.add(new Option("Crear algo", this::addEntry));
+    	options.add(new Option("Eliminar un elemento", this::deleteEntry));
+    	options.add(new Option("Modificar un elemento", this::modifyEntry));
+    	options.add(new Option("Ver un elemento", this::showEntry));
     	
     	ConsoleMenuUtil.menu(true, options, prompt);
     }
     public void addEntry() {
-    	GameObjectType type = getElementType("Añadir");
+    	GameObjectType type = getElementType("crear");
     	app.addEntry(input.getGameObject(type));
     }
     public void deleteEntry() {
@@ -130,7 +130,7 @@ public class ConsoleView {
 		
 	}
     /*Menu seleccion de elemento
-    ¿Que elemento quieres añadir?
+    ï¿½Que elemento quieres aï¿½adir?
     1 - ${GameObjectType[0]}
     2 - ${GameObjectType[1]}
     3 - ${GameObjectType[2]}
@@ -141,7 +141,7 @@ public class ConsoleView {
     public GameObjectType getElementType(String action) {
         	int i = 1;
         	input.listEnum(GameObjectType.values());
-        	return input.getGameObjectType("¿Que elemento quieres "+action+"?");
+        	return input.getGameObjectType("Elige el elemento para "+action);
     }
     
 

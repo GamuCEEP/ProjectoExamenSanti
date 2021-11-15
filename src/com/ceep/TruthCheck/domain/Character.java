@@ -11,7 +11,7 @@ public class Character extends GameObject{
     private final List<Item> inventory;
     private final List<Item> equipment;
     
-    public Character(int id, String name, String description, List<Item> inventory, List<Item> equipment){
+    public Character(String name, String description, List<Item> inventory, List<Item> equipment){
         super();
         this.name = name;
         this.description = description;
