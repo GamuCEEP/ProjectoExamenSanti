@@ -1,15 +1,14 @@
 package com.ceep.TruthCheck.data.txtDatabase;
 
 import com.ceep.TruthCheck.data.txtDatabase.Storable;
-import com.ceep.TruthCheck.domain.Character;
-import com.ceep.TruthCheck.domain.GameObject;
-import com.ceep.TruthCheck.domain.Item;
+import com.ceep.TruthCheck.domain.*;
+import com.ceep.TruthCheck.exceptions.ObjectCreationException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseConversor {
 
-    public static Character charFromDBString(String stringifiedChar) {
+    public static GameCharacter charFromDBString(String stringifiedChar) {
 
         String[] chardata = stringifiedChar.split(Storable.FIELD_SEPARATOR);
         
@@ -17,54 +16,75 @@ public class DatabaseConversor {
         String name = chardata[1];
         String description = chardata[2];
 
-        List<Item> inventory = itemListFromDBString(chardata[3]);
+        List<GameItem> inventory = itemListFromDBString(chardata[3]);
 
-        List<Item> equipment = itemListFromDBString(chardata[4]);
+        List<GameItem> equipment = itemListFromDBString(chardata[4]);
         
-        return new Character(id, name, description, inventory, equipment);
+        return new GameCharacter(id, name, description, inventory, equipment);
     }
 
     
-    public static List<Item> itemListFromDBString(String stringifiedItems){
-        List<Item> list = new ArrayList<>();
+    public static List<GameItem> itemListFromDBString(String stringifiedItems){
+        List<GameItem> list = new ArrayList<>();
         for (String itemdata : stringifiedItems.split(Storable.LIST_SEPARATOR)) {
             list.add(itemFromDBString(itemdata));
         }
         return list;
     }
     
-    public static Item itemFromDBString(String stringifiedItem){
+    public static GameItem itemFromDBString(String stringifiedItem){
         String[] itemdata = stringifiedItem.split(Storable.FIELD_SEPARATOR);
         
         int id = Integer.parseInt(itemdata[0]);
         String nombre = itemdata[1];
         String description = itemdata[2];
         
-        return new Item(id, nombre, description);
+        return new GameItem(id, nombre, description);
     }
     
-    public static String toDBString(GameObject o){
-        if(o instanceof com.ceep.TruthCheck.domain.Character)
-            return toDBString((com.ceep.TruthCheck.domain.Character)o);
-        if(o instanceof Item)
-            return toDBString((Item)o);
+    public static GameObject gameObjectFromDBString(String stringifiedGameObject, GameObjectType type) 
+            throws ObjectCreationException{
         
+        switch (type) {
+            case Character:
+                return charFromDBString(stringifiedGameObject);
+            case Item:
+                return itemFromDBString(stringifiedGameObject);
+            default:
+                throw new ObjectCreationException("Object of type "+type+" cannot be created");
+        }
+    }
+    public static List<GameObject> gameObjectsFromDBString(List<String> stringifiedGameObjects, GameObjectType type) 
+            throws ObjectCreationException{
+        List<GameObject> result = new ArrayList<>();
+        for(String stringifiedGameObject : stringifiedGameObjects){
+            gameObjectFromDBString(stringifiedGameObject, type);
+        }
+        return result;
+    }
+    
+    
+    public static String toDBString(GameObject o){
+        if(o instanceof com.ceep.TruthCheck.domain.GameCharacter)
+            return toDBString((com.ceep.TruthCheck.domain.GameCharacter)o);
+        if(o instanceof GameItem)
+            return toDBString((GameItem)o);
         return null;
     }
     
-    public static String toDBString(Character c) {
+    public static String toDBString(GameCharacter c) {
         StringBuilder stringifiedChar = new StringBuilder();
 
         stringifiedChar.append(c.getId()).append(Storable.FIELD_SEPARATOR);
         stringifiedChar.append(c.getName()).append(Storable.FIELD_SEPARATOR);
         stringifiedChar.append(c.getDescription()).append(Storable.FIELD_SEPARATOR);
 
-        for (Item item : c.getInventory()) {
+        for (GameItem item : c.getInventory()) {
             stringifiedChar.append(item.getId()).append(Storable.LIST_SEPARATOR);
         }
         stringifiedChar.append(Storable.FIELD_SEPARATOR);
 
-        for (Item item : c.getEquipment()) {
+        for (GameItem item : c.getEquipment()) {
             stringifiedChar.append(item.getId()).append(Storable.LIST_SEPARATOR);
         }
         stringifiedChar.append(Storable.FIELD_SEPARATOR);
@@ -72,7 +92,7 @@ public class DatabaseConversor {
         return stringifiedChar.toString();
         //id;name;description;itemid,itemid,;itemid,itemid,;
     }
-     public static String toDBString(Item i){
+     public static String toDBString(GameItem i){
          StringBuilder stringifiedItem = new StringBuilder();
          
          stringifiedItem.append(i.getId()).append(Storable.FIELD_SEPARATOR);
@@ -80,5 +100,6 @@ public class DatabaseConversor {
          stringifiedItem.append(i.getDescription()).append(Storable.FIELD_SEPARATOR);
          
          return stringifiedItem.toString();
+         //id;name;description;
      }
 }

@@ -137,7 +137,7 @@ public class DataAccess {
      * @throws WriteException
      */
     public void writeData(GameObject data) throws WriteException {
-        database.writeData(selectedDatabase, data.getClass().getSimpleName(), data.toDBString());
+        database.writeData(selectedDatabase, data.getClass().getSimpleName(), DatabaseConversor.toDBString(data));
     }
 
     /**
@@ -149,7 +149,7 @@ public class DataAccess {
      * @throws ReadException
      */
     public void removeData(String databaseName, GameObject data) throws WriteException, ReadException {
-        database.removeData(databaseName, data.getClass().getSimpleName(), data.toDBString());
+        database.removeData(databaseName, data.getClass().getSimpleName(), DatabaseConversor.toDBString(data));
     }
 
     /**
@@ -160,7 +160,7 @@ public class DataAccess {
      * @throws ReadException
      */
     public void removeData(GameObject data) throws WriteException, ReadException {
-        database.removeData(selectedDatabase, data.getClass().getSimpleName(), data.toDBString());
+        database.removeData(selectedDatabase, data.getClass().getSimpleName(), DatabaseConversor.toDBString(data));
     }
 
     /**
@@ -178,7 +178,8 @@ public class DataAccess {
      */
     public void modifyData(String databaseName, GameObject data, GameObject newData)
             throws WriteException, ReadException {
-        database.modifyData(databaseName, data.getClass().getSimpleName(), data.toDBString(), newData.toDBString());
+        database.modifyData(databaseName, data.getClass().getSimpleName(),
+                DatabaseConversor.toDBString(data), DatabaseConversor.toDBString(data));
     }
 
     /**
@@ -190,7 +191,8 @@ public class DataAccess {
      * @throws ReadException
      */
     public void modifyData(GameObject data, GameObject newData) throws WriteException, ReadException {
-        database.modifyData(selectedDatabase, data.getClass().getSimpleName(), data.toDBString(), newData.toDBString());
+        database.modifyData(selectedDatabase, data.getClass().getSimpleName(),
+                DatabaseConversor.toDBString(data), DatabaseConversor.toDBString(data));
     }
 
     /**
@@ -205,7 +207,8 @@ public class DataAccess {
      */
     public List<GameObject> readData(String databaseName, GameObjectType datatype)
             throws ReadException, ObjectCreationException {
-        return parseObjects(database.readData(databaseName, datatype.name()), datatype);
+        List<String> stringifiedGameObjects = database.readData(databaseName, datatype.name());
+        return DatabaseConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
     }
 
     /**
@@ -219,7 +222,8 @@ public class DataAccess {
      * @throws ObjectCreationException
      */
     public List<GameObject> readData(GameObjectType datatype) throws ReadException, ObjectCreationException {
-        return parseObjects(database.readData(selectedDatabase, datatype.name()), datatype);
+        List<String> stringifiedGameObjects = database.readData(selectedDatabase, datatype.name());
+        return DatabaseConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
     }
 
     /**
@@ -235,7 +239,8 @@ public class DataAccess {
      */
     public List<GameObject> searchData(String databaseName, String search, GameObjectType datatype)
             throws ReadException, ObjectCreationException {
-        return parseObjects(database.searchData(databaseName, datatype.name(), search), datatype);
+        List<String> stringifiedGameObjects = database.searchData(databaseName, datatype.name(), search);
+        return DatabaseConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
     }
 
     /**
@@ -251,48 +256,7 @@ public class DataAccess {
      */
     public List<GameObject> searchData(String search, GameObjectType datatype)
             throws ReadException, ObjectCreationException {
-        return parseObjects(database.searchData(selectedDatabase, datatype.name(), search), datatype);
-    }
-
-    /**
-     * Recive un objeto en forma de texto y lo convierte al objeto del tipo que
-     * sea
-     *
-     * @param stringifiedObject el objeto en forma de texto
-     * @param type el tipo al que se convierte
-     * @return el objeto del texto pasado
-     * @throws ObjectCreationException
-     */
-    public GameObject parseObject(String stringifiedObject, GameObjectType type) throws ObjectCreationException {
-        GameObject parsedObj = null;
-        switch (type) {
-            case Character:
-                parsedObj = new com.ceep.TruthCheck.domain.Character(stringifiedObject);
-                break;
-            case Item:
-                parsedObj = new Item(stringifiedObject);
-                break;
-            default:
-                throw new ObjectCreationException(type.name() + " type object cannot be created");
-        }
-        return parsedObj;
-    }
-
-    /**
-     * Recibe una lista de objetos en forma de texto y lo convierte a una lista
-     * de los objetos
-     *
-     * @param stringifiedObjects lista con objetos en forma de texto
-     * @param datatype tipo de objeto que se va a crear
-     * @return la lista con los textos convertidos a objeto
-     * @throws ObjectCreationException
-     */
-    public List<GameObject> parseObjects(List<String> stringifiedObjects, GameObjectType datatype)
-            throws ObjectCreationException {
-        List<GameObject> parsedObjs = new ArrayList<>();
-        for (String stringifiedObject : stringifiedObjects) {
-            parsedObjs.add(parseObject(stringifiedObject, datatype));
-        }
-        return parsedObjs;
+        List<String> stringifiedGameObjects = database.searchData(selectedDatabase, datatype.name(), search);
+        return DatabaseConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
     }
 }

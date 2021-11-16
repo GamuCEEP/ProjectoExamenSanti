@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import com.ceep.TruthCheck.domain.GameObject;
 import com.ceep.TruthCheck.domain.GameObjectType;
-import com.ceep.TruthCheck.domain.Item;
+import com.ceep.TruthCheck.domain.GameItem;
 import java.util.List;
 
 public class DataGetter {
@@ -44,17 +44,17 @@ public class DataGetter {
         }
     }
 
-    public GameObject getCharacter(List<Item> items) {
+    public GameObject getCharacter(List<GameItem> items) {
         System.out.println("Bienvenido al creador de personajes");
         String nombre = getText("�Como se llama el personaje?");
         String descripcion = getText("Describe al personaje");
-        List<Item> inventory = getItems("¿Que lleva en el inventario?", items);
-        List<Item> equipment = getItems("¿Que lleva equipado?", items);
+        List<GameItem> inventory = getItems("¿Que lleva en el inventario?", items);
+        List<GameItem> equipment = getItems("¿Que lleva equipado?", items);
         
-        return new com.ceep.TruthCheck.domain.Character(nombre, descripcion, inventory, equipment);
+        return new com.ceep.TruthCheck.domain.GameCharacter(nombre, descripcion, inventory, equipment);
     }
 
-    public List<Item> getItems(String prompt, List<Item>) {
+    public List<GameItem> getItems(String prompt, List<GameItem>) {
         
     }
 
@@ -62,7 +62,7 @@ public class DataGetter {
         System.out.println("Bienvenido al creador de objetos");
         String nombre = getText("�Como se llama el objeto");
         String descripcion = getText("Describe el objeto");
-        return new Item(nombre, descripcion);
+        return new GameItem(nombre, descripcion);
     }
 
     public GameObjectType getGameObjectType(String prompt) {

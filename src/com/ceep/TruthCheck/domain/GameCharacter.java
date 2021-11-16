@@ -6,21 +6,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Character extends GameObject{
+public class GameCharacter extends GameObject{
     
     private int id;
     private String name;
     private String description;
-    private List<Item> inventory;
-    private List<Item> equipment;
+    private List<GameItem> inventory;
+    private List<GameItem> equipment;
     
-    public Character(String name, String description, List<Item> inventory, List<Item> equipment){
+    public GameCharacter(String name, String description, List<GameItem> inventory, List<GameItem> equipment){
         this.name = name;
         this.description = description;
         this.inventory = inventory;
         this.equipment = equipment;
     }
-    public Character(int id, String name, String description, List<Item> inventory, List<Item> equipment){
+    public GameCharacter(int id, String name, String description, List<GameItem> inventory, List<GameItem> equipment){
         this.id = id;
         this.name = name;
         this.description = description;
@@ -40,26 +40,26 @@ public class Character extends GameObject{
         return description;
     }
 
-    public List<Item> getInventory() {
+    public List<GameItem> getInventory() {
         return inventory;
     }
 
-    public List<Item> getEquipment() {
+    public List<GameItem> getEquipment() {
         return equipment;
     }
     
     
     
-//    public void addItemToInventory(Item item){
+//    public void addItemToInventory(GameItem item){
 //        this.inventory.add(item);
 //    }
-//    public void equipItem(Item item){
+//    public void equipItem(GameItem item){
 //        this.equipment.add(item);
 //    }
-//    public Item popItemFromInventory(Item item){
+//    public GameItem popItemFromInventory(GameItem item){
 //        return this.inventory.remove(inventory.indexOf(item));
 //    }
-//    public Item unequipItem(Item item){
+//    public GameItem unequipItem(GameItem item){
 //        return this.inventory.remove(inventory.indexOf(item));
 //    }
 
