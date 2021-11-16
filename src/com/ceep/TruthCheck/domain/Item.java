@@ -3,30 +3,35 @@ package com.ceep.TruthCheck.domain;
 
 
 public class Item extends GameObject{
-    private final String name;
-    private final String description;
+    
+    private int id;
+    private String name;
+    private String description;
     
     public Item(String name, String description){
-    	super();
         this.name = name;
         this.description = description;
     }
-    public Item(String stringifiedItem){
-        super();
-        String[] itemdata = stringifiedItem.split(";");        
-        this.name = itemdata[1];
-        this.description = itemdata[2];
+    
+    public Item(int id, String name, String description){
+    	this.id = id;
+        this.name = name;
+        this.description = description;
     }
 
-    @Override
-    public String toDBString() {
-        StringBuilder stringifiedItem = new StringBuilder();
-        
-        stringifiedItem.append(id).append(FIELD_SEPARATOR);
-        stringifiedItem.append(name).append(FIELD_SEPARATOR);
-        stringifiedItem.append(description).append(FIELD_SEPARATOR);
-        
-        return stringifiedItem.toString();
+    public int getId() {
+        return id;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    
+    
+    
     
 }

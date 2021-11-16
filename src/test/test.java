@@ -17,8 +17,29 @@ public class test {
 
 	public static void main(String[] args) {
 
-		DataGetter a = new DataGetter();
-		
-		System.out.println(a.getGameObjectType("¿Que tipo de objeto?"));
+		verdura a = new patata();
+                
+                printer.print(a);
 	}
+}
+class printer{
+    public static void print(verdura v){
+     
+    }
+    private static void _print(patata v){
+        System.out.println("Patataaaaa");
+    }
+    private static void _print(pepino v){
+        System.out.println("Pepinooooo");
+    }
+    
+}
+class patata extends verdura{
+    
+}
+class pepino extends verdura{
+    
+}
+class verdura{
+    
 }

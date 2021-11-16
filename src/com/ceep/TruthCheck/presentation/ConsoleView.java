@@ -1,8 +1,8 @@
 package com.ceep.TruthCheck.presentation;
 
 import com.ceep.TruthCheck.business.BusinesManager;
-import com.ceep.TruthCheck.data.DataAccess;
-import com.ceep.TruthCheck.data.TXTDataBase;
+import com.ceep.TruthCheck.data.txtDatabase.DataAccess;
+import com.ceep.TruthCheck.data.txtDatabase.TXTDataBase;
 import com.ceep.TruthCheck.domain.GameObjectType;
 import com.ceep.TruthCheck.exceptions.AccessException;
 import com.ceep.TruthCheck.exceptions.DatabaseNotFoundException;

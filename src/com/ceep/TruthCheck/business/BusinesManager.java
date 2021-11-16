@@ -2,7 +2,7 @@ package com.ceep.TruthCheck.business;
 
 import java.util.List;
 
-import com.ceep.TruthCheck.data.DataAccess;
+import com.ceep.TruthCheck.data.txtDatabase.DataAccess;
 import com.ceep.TruthCheck.domain.GameObject;
 import com.ceep.TruthCheck.domain.GameObjectType;
 import com.ceep.TruthCheck.exceptions.AccessException;
@@ -19,8 +19,8 @@ public class BusinesManager {
 		this.data = data;
 	}
 	/*
-	 * 1 - Crear base de datos 2 - Añadir base de datos 2 - Listar bases de datos 3
-	 * - Borrar base de datos 4 - Conectar a base de datos 1 - Añadir un elemento 2
+	 * 1 - Crear base de datos 2 - Aï¿½adir base de datos 2 - Listar bases de datos 3
+	 * - Borrar base de datos 4 - Conectar a base de datos 1 - Aï¿½adir un elemento 2
 	 * - Eliminar un elemento 3 - Modificar un elemento 4 - Ver un elemento
 	 */
 

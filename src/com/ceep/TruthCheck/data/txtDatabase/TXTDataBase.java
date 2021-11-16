@@ -1,5 +1,6 @@
-package com.ceep.TruthCheck.data;
+package com.ceep.TruthCheck.data.txtDatabase;
 
+import com.ceep.TruthCheck.data.DataBase;
 import com.ceep.TruthCheck.exceptions.TXT.*;
 import java.io.*;
 import java.nio.file.Files;
