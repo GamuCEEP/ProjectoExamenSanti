@@ -2,8 +2,9 @@
 
 package com.ceep.TruthCheck.data.txtDatabase;
 
+import com.ceep.TruthCheck.data.txtDatabase.DataType.DataType;
 import com.ceep.TruthCheck.data.DataBase;
-import com.ceep.TruthCheck.exceptions.TXT.TypeSafetyExtension;
+import com.ceep.TruthCheck.exceptions.TXT.TypeException;
 import com.ceep.TruthCheck.exceptions.WriteException;
 import java.nio.file.Paths;
 
@@ -35,7 +36,7 @@ public class DataAccess1 {
         DB.writeData(database, CONFIG, DBConversor.toDBString(table));
     }
     public void addEntry(String database, Table table, Storable entry) 
-            throws TypeSafetyExtension, WriteException{
+            throws TypeException, WriteException{
         if(/*typeSafe(entry)*/false) return;
         
         DB.writeData(database, table.getTableName(), DBConversor.toDBString(entry));        

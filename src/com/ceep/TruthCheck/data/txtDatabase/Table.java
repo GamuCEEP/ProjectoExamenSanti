@@ -2,6 +2,8 @@
 
 package com.ceep.TruthCheck.data.txtDatabase;
 
+import com.ceep.TruthCheck.data.txtDatabase.DataType.DataType;
+
 
 public class Table implements Storable{
 

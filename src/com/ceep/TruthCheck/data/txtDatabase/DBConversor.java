@@ -1,5 +1,6 @@
 package com.ceep.TruthCheck.data.txtDatabase;
 
+import com.ceep.TruthCheck.data.txtDatabase.DataType.DataType;
 import com.ceep.TruthCheck.data.txtDatabase.Storable;
 import com.ceep.TruthCheck.domain.*;
 import com.ceep.TruthCheck.exceptions.ObjectCreationException;
