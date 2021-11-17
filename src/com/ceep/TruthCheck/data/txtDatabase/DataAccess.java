@@ -1,7 +1,6 @@
 package com.ceep.TruthCheck.data.txtDatabase;
 
 import com.ceep.TruthCheck.data.DataBase;
-import com.ceep.TruthCheck.data.txtDatabase.Storable;
 import com.ceep.TruthCheck.domain.*;
 import com.ceep.TruthCheck.exceptions.*;
 import java.util.ArrayList;
@@ -50,7 +49,12 @@ public class DataAccess {
      * @throws DatabaseNotFoundException
      */
     public void selectDatabase(String databaseName) throws ReadException, DatabaseNotFoundException {
-        if (!database.readData("", "config").contains(databaseName)) {
+        boolean exists = false;
+        for (String line : database.readData("", "config")) {
+            exists |= line.contains(databaseName);
+        }
+        
+        if (!exists) {
             throw new DatabaseNotFoundException("Could not find database " + databaseName);
         }
         selectedDatabase = databaseName;
@@ -85,6 +89,7 @@ public class DataAccess {
      * Crea e inicializa una base de datos
      *
      * @param databaseName nombre de la base de datos
+     * @param tables un array de tablas de la base de datos
      * @throws WriteException
      */
     public void createDatabase(String databaseName, Table... tables) throws WriteException {
@@ -127,7 +132,7 @@ public class DataAccess {
      * @throws WriteException
      */
     public void writeData(String databaseName, GameObject data) throws WriteException {
-        database.writeData(databaseName, data.getClass().getSimpleName(), DatabaseConversor.toDBString(data));
+        database.writeData(databaseName, data.getClass().getSimpleName(), DBConversor.toDBString(data));
     }
 
     /**
@@ -137,7 +142,7 @@ public class DataAccess {
      * @throws WriteException
      */
     public void writeData(GameObject data) throws WriteException {
-        database.writeData(selectedDatabase, data.getClass().getSimpleName(), DatabaseConversor.toDBString(data));
+        database.writeData(selectedDatabase, data.getClass().getSimpleName(), DBConversor.toDBString(data));
     }
 
     /**
@@ -149,7 +154,7 @@ public class DataAccess {
      * @throws ReadException
      */
     public void removeData(String databaseName, GameObject data) throws WriteException, ReadException {
-        database.removeData(databaseName, data.getClass().getSimpleName(), DatabaseConversor.toDBString(data));
+        database.removeData(databaseName, data.getClass().getSimpleName(), DBConversor.toDBString(data));
     }
 
     /**
@@ -160,7 +165,7 @@ public class DataAccess {
      * @throws ReadException
      */
     public void removeData(GameObject data) throws WriteException, ReadException {
-        database.removeData(selectedDatabase, data.getClass().getSimpleName(), DatabaseConversor.toDBString(data));
+        database.removeData(selectedDatabase, data.getClass().getSimpleName(), DBConversor.toDBString(data));
     }
 
     /**
@@ -179,7 +184,7 @@ public class DataAccess {
     public void modifyData(String databaseName, GameObject data, GameObject newData)
             throws WriteException, ReadException {
         database.modifyData(databaseName, data.getClass().getSimpleName(),
-                DatabaseConversor.toDBString(data), DatabaseConversor.toDBString(data));
+                DBConversor.toDBString(data), DBConversor.toDBString(data));
     }
 
     /**
@@ -192,7 +197,7 @@ public class DataAccess {
      */
     public void modifyData(GameObject data, GameObject newData) throws WriteException, ReadException {
         database.modifyData(selectedDatabase, data.getClass().getSimpleName(),
-                DatabaseConversor.toDBString(data), DatabaseConversor.toDBString(data));
+                DBConversor.toDBString(data), DBConversor.toDBString(data));
     }
 
     /**
@@ -208,7 +213,7 @@ public class DataAccess {
     public List<GameObject> readData(String databaseName, GameObjectType datatype)
             throws ReadException, ObjectCreationException {
         List<String> stringifiedGameObjects = database.readData(databaseName, datatype.name());
-        return DatabaseConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
+        return DBConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
     }
 
     /**
@@ -223,7 +228,7 @@ public class DataAccess {
      */
     public List<GameObject> readData(GameObjectType datatype) throws ReadException, ObjectCreationException {
         List<String> stringifiedGameObjects = database.readData(selectedDatabase, datatype.name());
-        return DatabaseConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
+        return DBConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
     }
 
     /**
@@ -240,7 +245,7 @@ public class DataAccess {
     public List<GameObject> searchData(String databaseName, String search, GameObjectType datatype)
             throws ReadException, ObjectCreationException {
         List<String> stringifiedGameObjects = database.searchData(databaseName, datatype.name(), search);
-        return DatabaseConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
+        return DBConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
     }
 
     /**
@@ -257,6 +262,6 @@ public class DataAccess {
     public List<GameObject> searchData(String search, GameObjectType datatype)
             throws ReadException, ObjectCreationException {
         List<String> stringifiedGameObjects = database.searchData(selectedDatabase, datatype.name(), search);
-        return DatabaseConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
+        return DBConversor.gameObjectsFromDBString(stringifiedGameObjects, datatype);
     }
 }

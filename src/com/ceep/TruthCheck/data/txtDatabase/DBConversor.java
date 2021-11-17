@@ -6,7 +6,7 @@ import com.ceep.TruthCheck.exceptions.ObjectCreationException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseConversor {
+public class DBConversor {
 
     public static GameCharacter charFromDBString(String stringifiedChar) {
 
@@ -46,9 +46,9 @@ public class DatabaseConversor {
             throws ObjectCreationException{
         
         switch (type) {
-            case Character:
+            case GameCharacter:
                 return charFromDBString(stringifiedGameObject);
-            case Item:
+            case GameItem:
                 return itemFromDBString(stringifiedGameObject);
             default:
                 throw new ObjectCreationException("Object of type "+type+" cannot be created");
@@ -64,14 +64,25 @@ public class DatabaseConversor {
     }
     
     
-    public static String toDBString(GameObject o){
-        if(o instanceof com.ceep.TruthCheck.domain.GameCharacter)
-            return toDBString((com.ceep.TruthCheck.domain.GameCharacter)o);
+    public static String toDBString(Storable o){
+        if(o instanceof Table)
+            return toDBString((Table)o);
+        if(o instanceof GameCharacter)
+            return toDBString((GameCharacter)o);
         if(o instanceof GameItem)
             return toDBString((GameItem)o);
         return null;
     }
-    
+    public static String toDBString(Table t){
+        StringBuilder stringifiedTable = new StringBuilder();
+        stringifiedTable.append(t.getTableName()).append(Storable.FIELD_SEPARATOR);
+        for (DataType dataType : t.getStructure()) {
+            stringifiedTable.append(dataType).append(Storable.LIST_SEPARATOR);
+        }
+        //tablename;type,type,type,
+        return stringifiedTable.toString();
+    }
+
     public static String toDBString(GameCharacter c) {
         StringBuilder stringifiedChar = new StringBuilder();
 

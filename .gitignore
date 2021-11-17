@@ -4,3 +4,4 @@
 *.properties
 /build/
 /bin/
+/dist/

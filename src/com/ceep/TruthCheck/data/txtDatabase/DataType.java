@@ -4,5 +4,6 @@ package com.ceep.TruthCheck.data.txtDatabase;
 
 
 public enum DataType {
-    STRING, INTEGER, DOUBLE;
+
+    STRING, INT, DECIMAL, TABLE_REF, LIST;
 }
