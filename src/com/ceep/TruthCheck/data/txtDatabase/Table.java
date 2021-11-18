@@ -1,16 +1,18 @@
-
-
 package com.ceep.TruthCheck.data.txtDatabase;
 
-import com.ceep.TruthCheck.data.txtDatabase.DataType.DataType;
+import java.util.Arrays;
+import java.util.List;
 
-
-public class Table implements Storable{
+public class Table implements Storable {
 
     private final String tableName;
-    private final DataType[] structure;
+    private final List<Column> structure;
 
-    public Table(String tableName, DataType... structure) {
+    public Table(String tableName, Column... structure) {
+        this.tableName = tableName;
+        this.structure = Arrays.asList(structure);
+    }
+    public Table(String tableName, List<Column> structure) {
         this.tableName = tableName;
         this.structure = structure;
     }
@@ -19,14 +21,26 @@ public class Table implements Storable{
         return tableName;
     }
 
-    public DataType[] getStructure() {
+    public List<Column> getStructure() {
         return structure;
     }
     
+    public static Column C(String name, DataType type){
+        return new Column(name, type);
+    }
     
-   
-    
-    
-    
-    
+    public boolean typeCheck(String entry){
+        
+    }
+
+    public static class Column {
+
+        public String name;
+        public DataType type;
+        
+        private Column(String name, DataType type) {
+            this.name = name;
+            this.type = type;
+        }
+    }
 }

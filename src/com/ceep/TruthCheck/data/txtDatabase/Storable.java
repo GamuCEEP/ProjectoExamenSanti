@@ -6,4 +6,5 @@ public interface Storable {
     public static final String FIELD_SEPARATOR = ";";
     public static final String LIST_SEPARATOR = ",";
     public static final String TABLE_SEPARATOR = "|";
+    public static final String PAIR_SEPARATOR = "·";
 }

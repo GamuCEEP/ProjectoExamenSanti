@@ -2,7 +2,9 @@ package test;
 
 import com.ceep.TruthCheck.business.BusinesManager;
 import com.ceep.TruthCheck.data.txtDatabase.DataAccess;
+import com.ceep.TruthCheck.data.txtDatabase.DataType;
 import com.ceep.TruthCheck.data.txtDatabase.TXTDataBase;
+import com.ceep.TruthCheck.data.txtDatabase.Table;
 import com.ceep.TruthCheck.domain.GameCharacter;
 import com.ceep.TruthCheck.domain.GameItem;
 import com.ceep.TruthCheck.exceptions.DatabaseNotFoundException;
@@ -12,7 +14,6 @@ import com.ceep.TruthCheck.exceptions.WriteException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 
 public class test {
 
@@ -47,12 +48,16 @@ public class test {
 //
 //        b.searchEntry("").forEach(t -> System.out.println(t));
 //        List<String> lista = new ArrayList<>();
-        
 
+        Table t = new Table("Item", 
+                Table.C("nombre", DataType.STRING),
+                Table.C("descripcion", DataType.STRING));
         
         
+        
+        
+        System.out.println(DataType.INT.check("Patata"));
 
     }
- 
-}
 
+}
