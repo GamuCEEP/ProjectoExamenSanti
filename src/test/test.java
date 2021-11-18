@@ -12,6 +12,7 @@ import com.ceep.TruthCheck.exceptions.ReadException;
 import com.ceep.TruthCheck.exceptions.TXT.FileReadException;
 import com.ceep.TruthCheck.exceptions.WriteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,15 +49,26 @@ public class test {
 //
 //        b.searchEntry("").forEach(t -> System.out.println(t));
 //        List<String> lista = new ArrayList<>();
+    	
+    	
+    	//Me ha quedado bonito ahora solo hace falta poder guardarlo :']
+    	Table t2 = new Table("Item", null,
+    			Table.C("id", DataType.REFERABLE),
+    			Table.C("nombre", DataType.STRING),
+    			Table.C("descripcion", DataType.STRING));
+    	
 
-        Table t = new Table("Item", 
+        Table t1 = new Table("Character", Arrays.asList(t2),
+        		Table.C("id", DataType.REFERABLE),
                 Table.C("nombre", DataType.STRING),
-                Table.C("descripcion", DataType.STRING));
+                Table.C("descripcion", DataType.STRING),
+                Table.C("item", DataType.REFERENCE));
         
+        String entry = "1;Pedro;Una persona comun;2";
         
+        System.out.println(t1.typeCheck(entry));
         
-        
-        System.out.println(DataType.INT.check("Patata"));
+       
 
     }
 

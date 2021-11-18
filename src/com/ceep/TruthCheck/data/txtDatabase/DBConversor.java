@@ -12,9 +12,25 @@ public class DBConversor {
         String[] tableData = stringifiedTable.split(Storable.FIELD_SEPARATOR);
 
         String tableName = tableData[0];
-        List<Table.Column> columns = columnsFromDBString(tableData[1]);
+        /*
+         * AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+         * putas tablas :) mirar el txt para guardar tablas
+         */
+        List<Table> foreignTables = tableListFromDBString(tableData[1]);
+        List<Table.Column> columns = columnsFromDBString(tableData[2]);
 
         return new Table(tableName, columns);
+    }
+    public static List<Table> tablesFromDBString(String StringifiedTables){
+    	/*TODO a ver, mmm se tienen que cargar todas las tablas del config, no?
+    	 * por que si no no se puede guardar, quiero decir
+    	 * 
+    	 * nombre;typo,tipo,tipo;(que va aqui?!?!?)
+    	 * 
+    	 * puedo poner """id's""" pero muero
+    	 * aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    	 * 
+    	 */
     }
 
     public static List<Table.Column> columnsFromDBString(String stringifiedColumns) {

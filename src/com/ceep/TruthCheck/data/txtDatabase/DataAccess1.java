@@ -17,6 +17,10 @@ public class DataAccess1 {
     private static final String CONFIG = "config";
 
     private DataBase DB;
+    
+    private String getPath(String end) {
+    	return Paths.get(ROOT, end).toString();
+    }
     /**
      * Crea una base de datos en {@value com.ceep.TruthCheck.data.txtDatabase.DataAccess1#ROOT}
      * @param database nombre de la base de datos
@@ -36,28 +40,21 @@ public class DataAccess1 {
      */
     public void createTable(String database, Table table)
             throws WriteException {
-        DB.createTable(database, table.getTableName());
+        DB.createTable(getPath(database), table.getTableName());
 
-        String configPath = Paths.get(ROOT, database).toString();
-        DB.createTable(configPath, CONFIG);
-        DB.writeData(database, CONFIG, DBConversor.toDBString(table));
+        DB.createTable(getPath(database), CONFIG);
+        DB.writeData(getPath(database), CONFIG, DBConversor.toDBString(table));
     }
     
     public void addEntry(String database, Table table, Storable entry)
             throws TypeException, WriteException {
-        if () {
-            return;
+        if (table.typeCheck(DBConversor.toDBString(entry))) {
+            throw new TypeException("The type of the entry does not match the structure of the table");
         }
 
-        DB.writeData(database, table.getTableName(), DBConversor.toDBString(entry));
+        DB.writeData(getPath(database), table.getTableName(), DBConversor.toDBString(entry));
     }
-
-    private boolean isTypeSafe(Storable entry, Table table) {
-        String[] entryData = DBConversor.toDBString(entry).split(Storable.FIELD_SEPARATOR);
-
-        for (DataType type : table.getStructure()) {
-
-        }
-    }
+    //Para seguir tengo el esquema cuantico, el txt
+    
 
 }
