@@ -1,8 +1,6 @@
 
 package com.ceep.TruthCheck.domain;
 
-import com.ceep.TruthCheck.data.txtDatabase.Storable;
-import java.util.ArrayList;
 import java.util.List;
 
 

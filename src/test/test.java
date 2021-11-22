@@ -19,54 +19,53 @@ import java.util.List;
 public class test {
 
     public static void main(String[] args) throws WriteException, FileReadException, ReadException, DatabaseNotFoundException {
-//        TXTDataBase txt = new TXTDataBase();
-//        DataAccess da = new DataAccess(txt);
-//        BusinesManager b = new BusinesManager(da);
-//
-//        String database = "patata";
-//
-//        b.createDatabase(database);
-//        b.listDatabases().forEach(t -> System.out.println("BD - "+t));
-//        b.conectToDatabase(database);
-//        System.out.println("Base de datos conectada: "+b.getConectedDatabase());
-//        
-//        GameItem espadaDePalo = new GameItem(0, "Espada de palo", "Es un palo");
-//        GameItem tapaDeOlla = new GameItem(1, "Tapa de olla", "El mejor escudo del mundo");
-//        GameItem gemita = new GameItem(2,"Gema preciosa","Es un trozo de una botella");
-//        
-//        b.addEntry(espadaDePalo);
-//        b.addEntry(tapaDeOlla);
-//        b.addEntry(gemita);
-//        
-//        List<GameItem> inventory = new ArrayList<GameItem>();
-//        inventory.add(gemita);
-//        List<GameItem> equipment = new ArrayList<GameItem>();
-//        equipment.add(espadaDePalo);
-//        equipment.add(tapaDeOlla);
-//        
-//        
-//        b.addEntry(new GameCharacter(3,"Antonio","La piedra mas furete del reino", inventory, equipment));
-//
-//        b.searchEntry("").forEach(t -> System.out.println(t));
-//        List<String> lista = new ArrayList<>();
-    	
-    	
-    	//Me ha quedado bonito ahora solo hace falta poder guardarlo :']
-    	Table t2 = new Table("Item", null,
-    			Table.C("id", DataType.REFERABLE),
-    			Table.C("nombre", DataType.STRING),
-    			Table.C("descripcion", DataType.STRING));
-    	
+        TXTDataBase txt = new TXTDataBase();
+        DataAccess da = new DataAccess(txt);
+        BusinesManager b = new BusinesManager(da);
 
-        Table t1 = new Table("Character", Arrays.asList(t2),
-        		Table.C("id", DataType.REFERABLE),
-                Table.C("nombre", DataType.STRING),
-                Table.C("descripcion", DataType.STRING),
-                Table.C("item", DataType.REFERENCE));
+        String database = "patata";
+
+        b.createDatabase(database);
+        b.listDatabases().forEach(t -> System.out.println("BD - "+t));
+        b.conectToDatabase(database);
+        System.out.println("Base de datos conectada: "+b.getConectedDatabase());
         
-        String entry = "1;Pedro;Una persona comun;2";
+        GameItem espadaDePalo = new GameItem(0, "Espada de palo", "Es un palo");
+        GameItem tapaDeOlla = new GameItem(1, "Tapa de olla", "El mejor escudo del mundo");
+        GameItem gemita = new GameItem(2,"Gema preciosa","Es un trozo de una botella");
         
-        System.out.println(t1.typeCheck(entry));
+        b.addEntry(espadaDePalo);
+        b.addEntry(tapaDeOlla);
+        b.addEntry(gemita);
+        
+        List<GameItem> inventory = new ArrayList<GameItem>();
+        inventory.add(gemita);
+        List<GameItem> equipment = new ArrayList<GameItem>();
+        equipment.add(espadaDePalo);
+        equipment.add(tapaDeOlla);
+        
+        
+        b.addEntry(new GameCharacter(3,"Antonio","La piedra mas furete del reino", inventory, equipment));
+
+        b.searchEntry("").forEach(t -> System.out.println(t));
+        //List<String> lista = new ArrayList<>();
+    	   	
+    	
+//    	Table t2 = new Table("Item", null,
+//    			Table.c("id", DataType.REFERABLE),
+//    			Table.c("nombre", DataType.STRING),
+//    			Table.c("descripcion", DataType.STRING));
+//    	
+//
+//        Table t1 = new Table("Character", Arrays.asList(t2.getTableName()),
+//        		Table.c("id", DataType.REFERABLE),
+//                Table.c("nombre", DataType.STRING),
+//                Table.c("descripcion", DataType.STRING),
+//                Table.c("item", DataType.REFERENCE));
+//        
+//        String entry = "1;Pedro;Una persona comun;2";
+//        
+//        System.out.println(t1.typeCheck(entry));
         
        
 
