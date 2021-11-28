@@ -1,0 +1,4 @@
+Character;id愛EFERABLE,name惹TRING,description惹TRING,inventory愛EFERENCE,equipment愛EFERENCE,;inventory,equipment,
+Item;id愛EFERABLE,name惹TRING,description惹TRING,;
+inventory;id愛EFERABLE,item愛EFERENCE,;Item,
+equipment;id愛EFERABLE,item愛EFERENCE,;Item,

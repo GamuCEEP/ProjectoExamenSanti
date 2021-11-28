@@ -1,6 +1,6 @@
 package com.ceep.TruthCheck.exceptions;
 
-public class WriteException extends Exception {
+public class WriteException extends AccessException {
 
     public WriteException() {
         super("Error while writing data");

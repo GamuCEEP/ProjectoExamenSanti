@@ -1,29 +1,49 @@
 package com.ceep.TruthCheck.data.txtDatabase;
 
+import com.ceep.TruthCheck.data.LinkTable;
+import com.ceep.TruthCheck.data.Table;
 import com.ceep.TruthCheck.domain.*;
-import com.ceep.TruthCheck.exceptions.ObjectCreationException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Traduce objetos a texto y viceversa
+ * 
+ * @author GamuD
+ *
+ */
 public class DBConversor {
-
+	/**
+	 * Crea una tabla a partir de su version en texto
+	 * 
+	 * @param stringifiedTable la tabla en texto
+	 * @return la tabla en objeto
+	 */
 	public static Table tableFromDBString(String stringifiedTable) {
-		// tablename;name·type,name·type,name·type,
 		String[] tableData = stringifiedTable.split(Storable.FIELD_SEPARATOR);
 
 		String tableName = tableData[0];
-		/*
-		 * 
-		 */
+
 		List<Table.Column> columns = columnsFromDBString(tableData[1]);
-		List<String> foreignTables = Arrays.asList(tableData[2].split(tableName));
+		List<String> foreignTables = new ArrayList<>();
+		try {
+			foreignTables = Arrays.asList(tableData[2].split(Storable.LIST_SEPARATOR));
+		} catch (ArrayIndexOutOfBoundsException e) {
+		}
 
 		return new Table(tableName, foreignTables, columns);
 	}
 
+	/**
+	 * Crea n columnas a partir de sus versiones en texto
+	 * 
+	 * @param stringifiedColumns la columnas en texto
+	 * @return lista de las columnas en objeto
+	 */
 	public static List<Table.Column> columnsFromDBString(String stringifiedColumns) {
-		String[] columnsData = stringifiedColumns.split(Storable.PAIR_SEPARATOR);
+		String[] columnsData = stringifiedColumns.split(Storable.LIST_SEPARATOR);
 		List<Table.Column> columns = new ArrayList<>();
 		for (String stringifiedColumn : columnsData) {
 			columns.add(columnFromDBString(stringifiedColumn));
@@ -31,15 +51,28 @@ public class DBConversor {
 		return columns;
 	}
 
+	/**
+	 * Crea una columna a partir de su version en texto
+	 * 
+	 * @param stringifiedColumn la columna en texto
+	 * @return la coluna en objeto
+	 */
 	public static Table.Column columnFromDBString(String stringifiedColumn) {
 		String[] columnData = stringifiedColumn.split(Storable.PAIR_SEPARATOR);
 		String name = columnData[0];
-		DataType type = DataType.valueOf(name);
+		DataType type = DataType.valueOf(columnData[1]);
 
 		return Table.c(name, type);
 	}
 
-	public static GameCharacter charFromDBString(String stringifiedChar) {
+	/**
+	 * Crea un personaje a partir de su version en texto
+	 * 
+	 * @param stringifiedChar personaje en texto
+	 * @param usableItems     objetos que hay
+	 * @return personaje con todas las referencias a sus items
+	 */
+	public static GameCharacter charFromDBString(String stringifiedChar, HashMap<String, GameItem> usableItems) {
 
 		String[] chardata = stringifiedChar.split(Storable.FIELD_SEPARATOR);
 
@@ -47,21 +80,34 @@ public class DBConversor {
 		String name = chardata[1];
 		String description = chardata[2];
 
-		List<GameItem> inventory = itemListFromDBString(chardata[3]);
+		List<GameItem> inventory = itemListFromDBString(chardata[3], usableItems);
 
-		List<GameItem> equipment = itemListFromDBString(chardata[4]);
+		List<GameItem> equipment = itemListFromDBString(chardata[4], usableItems);
 
 		return new GameCharacter(id, name, description, inventory, equipment);
 	}
 
-	public static List<GameItem> itemListFromDBString(String stringifiedItems) {
+	/**
+	 * Crea una lista de items a partir de sus ids
+	 * 
+	 * @param itemIds     ids de los items
+	 * @param usableItems lista de items
+	 * @return una lista de items
+	 */
+	public static List<GameItem> itemListFromDBString(String itemIds, HashMap<String, GameItem> usableItems) {
 		List<GameItem> list = new ArrayList<>();
-		for (String itemdata : stringifiedItems.split(Storable.LIST_SEPARATOR)) {
-			list.add(itemFromDBString(itemdata));
+		for (String itemdata : itemIds.split(Storable.LIST_SEPARATOR)) {
+			list.add(usableItems.get(itemdata));
 		}
 		return list;
 	}
 
+	/**
+	 * Crea un item a partir de su version en texto
+	 * 
+	 * @param stringifiedItem item en forma de texto
+	 * @return el item
+	 */
 	public static GameItem itemFromDBString(String stringifiedItem) {
 		String[] itemdata = stringifiedItem.split(Storable.FIELD_SEPARATOR);
 
@@ -72,28 +118,20 @@ public class DBConversor {
 		return new GameItem(id, nombre, description);
 	}
 
-	public static GameObject gameObjectFromDBString(String stringifiedGameObject, GameObjectType type)
-			throws ObjectCreationException {
-
-		switch (type) {
-		case GameCharacter:
-			return charFromDBString(stringifiedGameObject);
-		case GameItem:
-			return itemFromDBString(stringifiedGameObject);
-		default:
-			throw new ObjectCreationException("Object of type " + type + " cannot be created");
-		}
-	}
-
-	public static List<GameObject> gameObjectsFromDBString(List<String> stringifiedGameObjects, GameObjectType type)
-			throws ObjectCreationException {
-		List<GameObject> result = new ArrayList<>();
-		for (String stringifiedGameObject : stringifiedGameObjects) {
-			gameObjectFromDBString(stringifiedGameObject, type);
+	public static HashMap<String, GameItem> itemsFromDBString(List<String> stringifiedItems) {
+		HashMap<String, GameItem> result = new  HashMap<>();
+		for(String s : stringifiedItems) {
+			result.put(s.split(Storable.FIELD_SEPARATOR)[1], itemFromDBString(s));
 		}
 		return result;
 	}
 
+	/**
+	 * Convierte un Storable en texto para ser guardado
+	 * 
+	 * @param o objeto a convertir
+	 * @return objeto en forma de texto
+	 */
 	public static String toDBString(Storable o) {
 		if (o instanceof Table) {
 			return toDBString((Table) o);
@@ -104,9 +142,28 @@ public class DBConversor {
 		if (o instanceof GameItem) {
 			return toDBString((GameItem) o);
 		}
+		if (o instanceof LinkTable) {
+			return toDBString((LinkTable) o);
+		}
 		return null;
 	}
 
+	/**
+	 * Convierte una tabla de enlace en texto
+	 * 
+	 * @param l
+	 * @return
+	 */
+	public static String toDBString(LinkTable l) {
+		return l.getKey1() + Storable.FIELD_SEPARATOR + l.getKey2();
+	}
+
+	/**
+	 * Convierte una tabla en texto
+	 * 
+	 * @param t
+	 * @return tabla en forma de texto
+	 */
 	public static String toDBString(Table t) {
 		StringBuilder stringifiedTable = new StringBuilder();
 		stringifiedTable.append(t.getTableName()).append(Storable.FIELD_SEPARATOR);
@@ -114,18 +171,30 @@ public class DBConversor {
 			stringifiedTable.append(toDBString(column)).append(Storable.LIST_SEPARATOR);
 		}
 		stringifiedTable.append(Storable.FIELD_SEPARATOR);
-		for (String table : t.getReferencedTablesNames()) {
-			stringifiedTable.append(table).append(Storable.LIST_SEPARATOR);
+		if (t.getReferencedTablesNames() != null) {
+			for (String table : t.getReferencedTablesNames()) {
+				stringifiedTable.append(table).append(Storable.LIST_SEPARATOR);
+			}
 		}
-		// tablename;name·type,name·type,name·type,;table,table,table
 		return stringifiedTable.toString();
 	}
 
+	/**
+	 * Convierte una columna en texto
+	 * 
+	 * @param c
+	 * @return la columna en forma de texto
+	 */
 	public static String toDBString(Table.Column c) {
 		return c.name + Storable.PAIR_SEPARATOR + c.type.toString();
-		// name·type
 	}
 
+	/**
+	 * Convierte un personaje en texto
+	 * 
+	 * @param c
+	 * @return el persnaje en forma de texto
+	 */
 	public static String toDBString(GameCharacter c) {
 		StringBuilder stringifiedChar = new StringBuilder();
 
@@ -144,9 +213,14 @@ public class DBConversor {
 		stringifiedChar.append(Storable.FIELD_SEPARATOR);
 
 		return stringifiedChar.toString();
-		// id;name;description;itemid,itemid,;itemid,itemid,;
 	}
 
+	/**
+	 * Convierte un item en texto
+	 * 
+	 * @param i
+	 * @return el item en forma de texto
+	 */
 	public static String toDBString(GameItem i) {
 		StringBuilder stringifiedItem = new StringBuilder();
 
@@ -155,6 +229,6 @@ public class DBConversor {
 		stringifiedItem.append(i.getDescription()).append(Storable.FIELD_SEPARATOR);
 
 		return stringifiedItem.toString();
-		// id;name;description;
 	}
+
 }

@@ -1,84 +1,90 @@
 package com.ceep.TruthCheck.business;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
-import com.ceep.TruthCheck.data.txtDatabase.DataAccess;
-import com.ceep.TruthCheck.data.txtDatabase.DataType;
-import com.ceep.TruthCheck.data.txtDatabase.Table;
-import com.ceep.TruthCheck.domain.GameCharacter;
-import com.ceep.TruthCheck.domain.GameItem;
-import com.ceep.TruthCheck.domain.GameObject;
-import com.ceep.TruthCheck.domain.GameObjectType;
+import com.ceep.TruthCheck.data.DataAccess;
+import com.ceep.TruthCheck.data.LinkTable;
+import com.ceep.TruthCheck.data.Table;
+import com.ceep.TruthCheck.data.sqlDatabase.SQLDataAccess;
+import com.ceep.TruthCheck.data.txtDatabase.*;
+import com.ceep.TruthCheck.domain.*;
 import com.ceep.TruthCheck.exceptions.*;
-import com.ceep.TruthCheck.exceptions.TXT.NoDatabaseSelectedException;
-import com.ceep.TruthCheck.exceptions.TXT.TypeException;
+import com.ceep.TruthCheck.exceptions.TXT.*;
 
 public class BusinesManager {
 
-	private final DataAccess data;
+	private DataAccess data;
 
 	public BusinesManager(DataAccess data) {
 		this.data = data;
 	}
 
-	/*
-	 * 1 - Crear base de datos 2 - A�adir base de datos 2 - Listar bases de datos
-	 * 3 - Borrar base de datos 4 - Conectar a base de datos 1 - A�adir un
-	 * elemento 2 - Eliminar un elemento 3 - Modificar un elemento 4 - Ver un
-	 * elemento
-	 */
-
-	public void createDatabase(String database)
-			throws WriteException, ReadException, DatabaseNotFoundException, NoDatabaseSelectedException {
-
-		Table personaje = new Table("Character", Arrays.asList("inventory", "equipment"),
-				Table.c("id", DataType.REFERABLE), Table.c("name", DataType.STRING),
-				Table.c("inventory", DataType.REFERENCE), Table.c("equipment", DataType.REFERENCE));
-		Table item = new Table("Item", null, Table.c("id", DataType.REFERABLE), Table.c("name", DataType.STRING),
-				Table.c("description", DataType.STRING));
-		Table inventario = new Table("inventory", Arrays.asList("Item"), Table.c("id", DataType.REFERABLE),
-				Table.c("item", DataType.REFERENCE));
-		Table equipamiento = new Table("equipment", Arrays.asList("Item"), Table.c("id", DataType.REFERABLE),
-				Table.c("item", DataType.REFERENCE));
-
-		data.createDatabase(database);
-		data.selectDatabase(database);
-		data.createTables(personaje, item, inventario, equipamiento);
-	}
-
-	public void deleteDatabase() throws AccessException, WriteException, ReadException, NoDatabaseSelectedException  {
-		data.deleteDatabase();
-	}
-
-	public List<String> listDatabases() throws ReadException {
-		return data.listDatabases();
-	}
-
-	public void conectToDatabase(String database) throws ReadException, DatabaseNotFoundException {
-		data.selectDatabase(database);
-	}
-
-	public void addEntry(GameObject entry) throws WriteException, TypeException, NoDatabaseSelectedException {
-		if(entry instanceof GameItem) {
-			data.addEntry(data.listTables().get("Item"),entry);
+	public void changeMode() throws SQLException {
+		if(data instanceof TXTDataAccess) {
+			data = new SQLDataAccess();
+		}else {
+			data = new TXTDataAccess();
 		}
-		if(entry instanceof GameCharacter) {
-			
+	}
+	public List<GameObject> searchByField(String search, GameObjectType type, int field)
+			throws ReadException, ObjectCreationException {
+
+		List<GameObject> result = new ArrayList<>();
+
+		HashMap<String, GameItem> items = new HashMap<>();
+
+		Table t = data.listTables().get("Item");
+		for (String entry : data.listEntries(t)) {
+			GameItem item = DBConversor.itemFromDBString(entry);
+			items.put(item.getId() + "", item);
 		}
-		
+
+		switch (type) {
+		default:
+		case Item:
+			for (String entry : data.listEntries(t)) {
+				if (entry.split(Storable.FIELD_SEPARATOR)[field].toLowerCase().contains(search.toLowerCase())) {
+					result.add(DBConversor.itemFromDBString(entry));
+				}
+			}
+			if(type == GameObjectType.Item) break;
+		case Personaje:
+			t = data.listTables().get("Character");
+			for (String entry : data.listEntries(t)) {
+				if (entry.split(Storable.FIELD_SEPARATOR)[field].toLowerCase().contains(search.toLowerCase())) {
+					result.add(DBConversor.charFromDBString(entry, items));
+				}
+			}
+			if(type == GameObjectType.Personaje) break;
+		}
+		return result;
 	}
 
-	public void deleteEntry(GameObject entry) throws WriteException, ReadException {
-		data.removeData(entry);
-	}
+	public List<GameObject> searchEntry(String search) throws ReadException, ObjectCreationException {
+		List<GameObject> result = new ArrayList<>();
 
-	public void modifyEntry(GameObject oldEntry, GameObject newEntry) throws WriteException, ReadException {
-		data.modifyEntry(oldEntry, newEntry); //TODO ver como hacer para elegir la tabla correcta
-	}
+		HashMap<String, GameItem> items = new HashMap<>();
 
-	public List<GameObject> searchEntry(String search) throws ReadException {
-		
+		Table t = data.listTables().get("Item");
+		for (String entry : data.listEntries(t)) {
+			GameItem item = DBConversor.itemFromDBString(entry);
+			items.put(item.getId() + "", item);
+			if (entry.contains(search)) {
+				result.add(item);
+			}
+		}
+		t = data.listTables().get("Character");
+		for (String entry : data.listEntries(t)) {
+			if (entry.contains(search)) {
+				result.add(DBConversor.charFromDBString(entry, items));
+			}
+		}
+		return result;
+
 	}
 
 	public String getConectedDatabase() {

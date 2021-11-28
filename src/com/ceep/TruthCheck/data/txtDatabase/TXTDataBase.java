@@ -67,7 +67,7 @@ public class TXTDataBase implements DataBase {
 		List<String> filedata = readData(database_name, table_name);
 
 		for (String entry : filedata) {
-			if (entry.equals(data)) {
+			if (entry.contains(data)) {
 				continue;
 			}
 			writeData(database_name, table_name, entry);
@@ -91,7 +91,6 @@ public class TXTDataBase implements DataBase {
 
 	@Override
 	public List<String> readData(String database_name, String table_name) throws FileReadException {
-
 		File file = Paths.get(database_name, table_name).toFile();
 		List<String> results = new ArrayList<>();
 		try (BufferedReader entrada = new BufferedReader(new FileReader(file))) {
@@ -100,7 +99,7 @@ public class TXTDataBase implements DataBase {
 				results.add(reading);
 			}
 		} catch (FileNotFoundException e) {
-			throw new FileReadException("Could not find the file");
+			throw new FileReadException("Could not find the file "+database_name+":"+table_name);
 		} catch (IOException e) {
 			throw new FileReadException("Error while reading " + database_name+":"+table_name);
 		}
@@ -117,5 +116,9 @@ public class TXTDataBase implements DataBase {
 			}
 		}
 		return results;
+	}
+	@Override
+	public boolean exists(String file) {
+		return new File(file).exists();
 	}
 }

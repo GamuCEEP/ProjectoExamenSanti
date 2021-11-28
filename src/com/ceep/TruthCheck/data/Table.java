@@ -1,8 +1,11 @@
-package com.ceep.TruthCheck.data.txtDatabase;
+package com.ceep.TruthCheck.data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.ceep.TruthCheck.data.txtDatabase.DataType;
+import com.ceep.TruthCheck.data.txtDatabase.Storable;
 
 /**
  * Representa una tabla de una base de datos

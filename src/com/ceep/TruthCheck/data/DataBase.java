@@ -84,5 +84,11 @@ public interface DataBase {
      */
     public List<String> searchData(String database_name, String table_name, String search) 
     		throws ReadException;
+    /**
+     * Devuelve true si existe
+     * @param database
+     * @return
+     */
+    public boolean exists(String file);
    
 }

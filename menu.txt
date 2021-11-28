@@ -1,0 +1,111 @@
+
+
+
+
+Menu				: -
+Estructura			: x	
+Ficheros y sql			: /
+CRUD				: /
+c-inicializar fichero		: 
+ -agregar entradas		:
+r-text to obj			:
+ -listar todo			:
+ -listar con filtro		:
+   -campo ascendente/desc	:
+ -buscar por campo		:
+   -preciso o cercano		:
+u-update entries		:
+d-borrar entradas		:
+ -borrar ficheros		:
+
+Gestion de excepciones		: /
+Tipos de datos			: /
+ -int				:
+ -String			:
+ -Double			:
+ -Date				:
+ -Enum				:
+Vinculación de info		: x
+
+
+
+
+
+Bienvenido al gestor de Truht Check
+- Guardar datos
+	-Introduce el nombre del archivo
+		+(existe) seguir normal
+		+(no) No existe, ¿Quiere crearlo?
+			-Si
+			-No, salir
+- Ver datos guardados
+
+- Opciones
+- Salir
+
+
+
+/Guardar datos
+- Crear personaje
+	-> crearPersonaje
+- Crear item
+	-> crearItem
+- Salir
+
+
+/Ver datos guardados
+- listar archivos de guardado
+	-> listarBases de datos
+- seleccionar archivo de guardado
+	-Introduce el nombre
+		+(existe) menuArchivo
+		+(no) No se encontró -> vuelve
+- Salir
+
+
+/menuArchivo
+- Listar todo
+	->search("")
+- Listar con filtro
+	- Que filtro quieres
+	->search(filtro)
+- Buscar por campo
+	- Que quieres buscar [item, character]
+	- Que filtro quieres
+	- Que campo quieres
+	->searchByField(filtro, tipo, campo)
+- Salir
+
+
+/Opciones
+- Modo de guardado [online, local]
+	-Selecciona si quieres guardar los datos en ficheros
+	 locales o en una base de datos SQL
+- Salir
+
+
+
+
+
+
+
+
+
+
+Personaje:
+	Id: 3
+   O	Nombre: Antonio
+  /|\	Descripcion: La piedra mas fuerte del reino
+  / \	Inventario:
+		Gema preciosa
+	Equipamiento: 
+		Espada de palo
+		Tapa de olla
+
+
+
+
+
+
+
+

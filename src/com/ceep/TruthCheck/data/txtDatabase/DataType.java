@@ -4,8 +4,15 @@ package com.ceep.TruthCheck.data.txtDatabase;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import com.ceep.TruthCheck.data.txtDatabase.Table.Column;
+import com.ceep.TruthCheck.data.Table;
+import com.ceep.TruthCheck.data.Table.Column;
 
+/**
+ * Un enum para comprobar el tipo de las tablas
+ * soporta referencias a otras tablas
+ * @author GamuD
+ *
+ */
 public enum DataType {
 	/**
 	 * Cualquier trozo de texto
@@ -53,13 +60,16 @@ public enum DataType {
 		if(table.getReferencedTables().isEmpty()) return false;
 		
 		try {
-			Integer.parseInt(data);
-			for(Table foreignTable : table.getReferencedTables()) {
-				for(Column column : foreignTable.getStructure()) {
-					if(column.type == DataType.REFERABLE) return true;
+			String[] ids = data.split(Storable.LIST_SEPARATOR);
+			for(String id : ids) {
+				Integer.parseInt(id);
+				for(Table foreignTable : table.getReferencedTables()) {
+					if(foreignTable == null) return false;
+					for(Column column : foreignTable.getStructure()) {
+						if(column.type == DataType.REFERABLE) return true;
+					}
 				}
-			}
-			
+			}			
 			return false;
 		} catch (NumberFormatException e) {
 			return false;

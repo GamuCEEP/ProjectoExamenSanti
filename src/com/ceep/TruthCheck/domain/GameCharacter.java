@@ -46,6 +46,26 @@ public class GameCharacter extends GameObject{
         return equipment;
     }
     
+    @Override
+    public String toString() {
+    	StringBuilder sb = new StringBuilder();
+    	
+    	sb.append("Personaje:");
+    	sb.append("\n\tId: ").append(id);
+    	sb.append("\n\tNombre: ").append(name);
+    	sb.append("\n\tDescripcion: ").append(description);
+    	sb.append("\n\tInventario: ");
+    	for(GameItem item : inventory) {
+    		sb.append("\n\t\t").append(item.getName());
+    	}
+    	sb.append("\n\tEquipamiento: ");
+    	for(GameItem item : equipment) {
+    		sb.append("\n\t\t").append(item.getName());
+    	}
+    	
+    	return sb.toString();
+    }
+    
     
     
 //    public void addItemToInventory(GameItem item){

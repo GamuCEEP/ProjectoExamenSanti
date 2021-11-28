@@ -1,10 +1,24 @@
 package com.ceep.TruthCheck.data.txtDatabase;
-
+/**
+ * Una interfaz para marcar los objetos que se pueden guardar en txt
+ * y guardar los separadores que se usan en el proceso
+ * @author GamuD
+ *
+ */
 public interface Storable {
-
-    public static final String DATABASE_DEFINITION = "=";
+	/**
+	 * Separa campos de objetos
+	 * id;nombre;
+	 */
     public static final String FIELD_SEPARATOR = ";";
+    /**
+     * Separa elementos en listas
+     * elem1,elem2,
+     */
     public static final String LIST_SEPARATOR = ",";
-    public static final String TABLE_SEPARATOR = "|";
-    public static final String PAIR_SEPARATOR = "Â·";
+    /**
+     * Separa pares clave valor
+     * perro·ladra
+     */
+    public static final String PAIR_SEPARATOR = "·";
 }

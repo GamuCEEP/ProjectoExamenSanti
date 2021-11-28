@@ -1,148 +1,201 @@
 package com.ceep.TruthCheck.presentation;
 
-import com.ceep.TruthCheck.business.BusinesManager;
-import com.ceep.TruthCheck.data.txtDatabase.DataAccess;
-import com.ceep.TruthCheck.data.txtDatabase.TXTDataBase;
+import com.ceep.TruthCheck.business.*;
+import com.ceep.TruthCheck.data.DataAccess;
+import com.ceep.TruthCheck.data.txtDatabase.*;
+import com.ceep.TruthCheck.domain.GameCharacter;
+import com.ceep.TruthCheck.domain.GameItem;
 import com.ceep.TruthCheck.domain.GameObjectType;
-import com.ceep.TruthCheck.exceptions.AccessException;
-import com.ceep.TruthCheck.exceptions.DatabaseNotFoundException;
-import com.ceep.TruthCheck.exceptions.ReadException;
-import com.ceep.TruthCheck.exceptions.WriteException;
-import com.ceep.TruthCheck.util.ConsoleMenuUtil;
-import com.ceep.TruthCheck.util.Option;
-import com.ceep.TruthCheck.util.Procedure;
+import com.ceep.TruthCheck.exceptions.*;
+import com.ceep.TruthCheck.exceptions.TXT.NoDatabaseSelectedException;
+import com.ceep.TruthCheck.exceptions.TXT.TypeException;
+import com.ceep.TruthCheck.util.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 
 public class ConsoleView {
 
-    private final BusinesManager app;
-    private final DataGetter input;
-    
+	private final BusinesManager app;
+	private final DatabaseManager data;
+	private final DataGetter input;
+	
+	private String saveMode = "SQL";
 
-    public ConsoleView() {
-        input = new DataGetter();
-        app = new BusinesManager(new DataAccess(new TXTDataBase()));
-    }
-    
-    /*Menu principal
-    Bienvenido al gestor de personajes
-    ï¿½Que queiere hacer?
-    
-    1 - Crear base de datos
-    2 - Listar bases de datos
-    3 - Borrar base de datos
-    4 - Conectar a base de datos
-    */
-    public void mainMenu() {
-    	String prompt = "Bienvenido al gestor de personajes\nï¿½Que quieres hacer?";
-    	
-    	List<Option> options = new ArrayList<Option>();
+	public ConsoleView() {
+		input = new DataGetter();
+		DataAccess da = new TXTDataAccess();
+		app = new BusinesManager(da);
+		data = new DatabaseManager(da);
+	}
 
-    	options.add(new Option("Crear nueva partida", this::createDatabase));
-    	options.add(new Option("Listar partidas", this::listDatabases));
-    	options.add(new Option("Borrar partida", this::deleteDatabase));
-    	options.add(new Option("Jugar partida", this::conectToDatabase));
-    	
-    	ConsoleMenuUtil.menu(true, options, prompt);
-    	
-    }
-    
-    public void createDatabase() {
-    	while(true) {
-    		String database = input.getText("Ponle un nombre a tu partida");
-        	try {
-    			app.createDatabase(database);
-    			return;
-    		} catch (WriteException e) {
-    			System.out.println("No se puede crear la partida "+database+", por favor prueba otro nombre");
-    		}
-    	}
-    }
-    public void listDatabases() {
-    	try {
-    		int i = 1;
-			for(String database : app.listDatabases()) {
-				System.out.println(i++ + " - "+database);
+	
+	public void mainMenu() {
+		String prompt = "Bienvenido al gestor de Truth Check\n";
+
+		List<Option> options = new ArrayList<Option>();
+
+		options.add(new Option("Guardar datos", this::saveData));
+		options.add(new Option("Ver datos guardados", this::seeData));
+		options.add(new Option("Opciones", this::options));
+
+		ConsoleMenuUtil.menu(true, options, prompt);
+
+	}
+
+	public void saveData() {
+		String file = input.getText("Introduce el nombre del archivo de guardado");
+		if (!data.exists(file)) {
+			String crearNuevo = input.getText("El archivo no existe, ¿Quieres crearlo?");
+
+			if (crearNuevo.toLowerCase().contains("s")) {
+				try {
+					data.createDatabase(file);
+				} catch (AccessException e) {
+					System.out.println("No se pudo crear");
+					return;
+				}
 			}
-		} catch (ReadException e) {
-			System.out.println("El archivo \"config\" no se ha encontrado o esta tiene un error");
 		}
-    	
-    }
-    public void deleteDatabase() {
-    	while(true) {
-    		String database = input.getText("Elige la partida que quieres borrar");
-    		listDatabases();
-        	try {
-        		app.deleteDatabase(database);
-    			return;
-    		} catch (AccessException e) {
-				System.out.println("No se pudo borrar la partida");
-			}
-    	}
-    }
-    public void conectToDatabase() {
-    	String database = input.getText("Elige que partida quieres jugar");
-    	listDatabases();
-    	try {
-			app.conectToDatabase(database);
-		} catch (ReadException e) {
-			System.out.println("El archivo \"config\" no se ha encontrado o tiene un error");
-		} catch (DatabaseNotFoundException e) {
-			System.out.println("No se encuentra la partida, intentalo de nuevo");
+		try {
+			data.conectToDatabase(file);
+		} catch (ReadException | DatabaseNotFoundException e) {
 		}
-    }
-    /*Menu de base de datos
-    Estas en ${databaseName}
-    ï¿½Que quieres hacer?
-    
-    1 - Aï¿½adir un elemento
-    2 - Eliminar un elemento
-    3 - Modificar un elemento
-    4 - Ver un elemento
-    */
-    public void databaseMenu() {
-    	String prompt = "Estas en "+app.getConectedDatabase() + "\nï¿½Que quieres hacer?";
-    	
-    	List<Option> options = new ArrayList<Option>();
 
-    	options.add(new Option("Crear algo", this::addEntry));
-    	options.add(new Option("Eliminar un elemento", this::deleteEntry));
-    	options.add(new Option("Modificar un elemento", this::modifyEntry));
-    	options.add(new Option("Ver un elemento", this::showEntry));
-    	
-    	ConsoleMenuUtil.menu(true, options, prompt);
-    }
-    public void addEntry() {
-    	GameObjectType type = getElementType("crear");
-    	app.addEntry(input.getGameObject(type));
-    }
-    public void deleteEntry() {
-    	
-    }
-    public void modifyEntry() {
-    	
-    }
-    public void showEntry() {
+		String prompt = "Menu de guardado de datos:\n";
+
+		List<Option> options = new ArrayList<Option>();
+
+		options.add(new Option("Crear personaje", this::createChar));
+		options.add(new Option("Crear item", this::createItem));
+
+		ConsoleMenuUtil.menu(true, options, prompt);
+
+	}
+
+	public void createChar() {
+		String name = input.getText("Nombre del Personaje: ");
+		String description = input.getText("Descripcion de "+name+": ");
+		
+		HashMap<String, GameItem> items = new HashMap<>() ;
+		
+		try {
+			items = data.getItems();
+		} catch (ReadException e) {
+			System.out.println("No se puede acceder a los objetos");
+			return;
+		}
+		List<GameItem> inventory = input.getItemList("¿Que objetos tiene en el inventario?", items);
+		List<GameItem> equipment = input.getItemList("¿Que objetos tiene equpados?", items);
+		
+		try {
+			data.addEntry(new GameCharacter(name, description, inventory, equipment));
+		} catch (TypeException | NoDatabaseSelectedException | AccessException e) {
+			System.out.println("No se pudo crear");
+		}
 		
 	}
-    /*Menu seleccion de elemento
-    ï¿½Que elemento quieres aï¿½adir?
-    1 - ${GameObjectType[0]}
-    2 - ${GameObjectType[1]}
-    3 - ${GameObjectType[2]}
-    .
-    .
-    .
-    */
-    public GameObjectType getElementType(String action) {
-        	int i = 1;
-        	input.listEnum(GameObjectType.values());
-        	return input.getGameObjectType("Elige el elemento para "+action);
-    }
-    
+
+	public void createItem() {
+		String name = input.getText("Nombre del Item: ");
+		String description = input.getText("Descripcion de "+ name+": ");
+		
+		try {
+			data.addEntry(new GameItem(name, description));
+		} catch (AccessException | TypeException | NoDatabaseSelectedException e) {
+			System.out.println("No se pudo crear");
+		}
+	}
+
+	public void seeData() {
+
+		System.out.println("Los archivos de guardado registrados son:");
+		String file;
+		while (true) {
+			try {
+				file = input.getElementFromList(data.listDatabases());
+			} catch (ReadException e) {
+				System.out.println("No se encontraron los archivos");
+				return;
+			}
+			try {
+				data.conectToDatabase(file);
+
+				String prompt = "Estas en " + file + ":\n";
+
+				List<Option> options = new ArrayList<Option>();
+
+				options.add(new Option("Listar todo", this::listAll));
+				options.add(new Option("Listar con filtro", this::search));
+				options.add(new Option("Listar por campo", this::listByField));
+
+				ConsoleMenuUtil.menu(true, options, prompt);
+
+				return;
+			} catch (ReadException | DatabaseNotFoundException e) {
+				continue;
+			}
+		}
+
+	}
+
+	public void listAll() {
+		try {
+			app.searchEntry("").forEach(e -> System.out.println(e));
+		} catch (ReadException | ObjectCreationException e) {
+			System.out.println("Los datos estan dañados");
+		}
+	}
+
+	public void search() {
+
+		String filter = input.getText("Que filtro quieres usar");
+		try {
+			app.searchEntry(filter).forEach(e -> System.out.println(e));
+		} catch (ReadException | ObjectCreationException e) {
+			System.out.println("Los datos estan dañados");
+		}
+	}
+
+	public void listByField() {
+		GameObjectType type = input.getGameObjectType("¿Que quieres buscar?");
+		String filter = input.getText("¿Que filtro quieres?");
+		int field = input.getField("¿Que campo quieres?");
+
+		try {
+			app.searchByField(filter, type, field).forEach(e->System.out.println(e));
+		} catch (ReadException | ObjectCreationException e) {
+			System.out.println("Los datos estan dañados");
+		}
+	}
+
+	public void options() {
+		String prompt = "Menu de opciones:\n";
+
+		List<Option> options = new ArrayList<Option>();
+
+		options.add(new Option("Modo de guardado", this::saveMode));
+
+		ConsoleMenuUtil.menu(true, options, prompt);
+	}
+	public void saveMode() {
+		System.out.println("Actualmente el modo de gaurdado es"+saveMode);
+		String inp = input.getText("Quieres cambiarlo");
+		if(inp.toLowerCase().contains("s")) {
+			saveMode = "TXT";
+			try {
+				app.changeMode();
+			} catch (SQLException e) {
+				System.out.println("No se pudo cambiar");
+			}
+			try {
+				data.changeMode();
+			} catch (SQLException e) {
+				System.out.println("No se pudo cambiar");
+			}
+		}
+	}
 
 }

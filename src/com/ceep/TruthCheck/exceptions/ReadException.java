@@ -1,6 +1,6 @@
 package com.ceep.TruthCheck.exceptions;
 
-public class ReadException extends Exception{
+public class ReadException extends AccessException{
 
     public ReadException() {
         super("Error while reading data");
