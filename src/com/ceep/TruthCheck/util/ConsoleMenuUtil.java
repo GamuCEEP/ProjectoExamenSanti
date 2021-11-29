@@ -3,6 +3,10 @@ package com.ceep.TruthCheck.util;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Clase de utilidad para gestionar los menus rapidamente
+ * @author Alumno Mañana
+ */
 public class ConsoleMenuUtil {
 
 	public static void menu(boolean canExit, List<Option> options, String prompt) {

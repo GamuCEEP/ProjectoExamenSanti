@@ -18,7 +18,7 @@ public interface Storable {
     public static final String LIST_SEPARATOR = ",";
     /**
      * Separa pares clave valor
-     * perro·ladra
+     * perroï¿½ladra
      */
-    public static final String PAIR_SEPARATOR = "·";
+    public static final String PAIR_SEPARATOR = "Â·";
 }

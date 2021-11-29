@@ -2,13 +2,8 @@ package com.ceep.TruthCheck.data.sqlDatabase;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
-import com.ceep.TruthCheck.data.DataBase;
-import com.ceep.TruthCheck.exceptions.*;
-import com.mysql.cj.jdbc.ConnectionImpl;
 
 public class Conexion {
 	

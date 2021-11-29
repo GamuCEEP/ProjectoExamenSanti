@@ -1,0 +1,4 @@
+Character;id·REFERABLE,name·STRING,description·STRING,inventory·REFERENCE,equipment·REFERENCE,;inventory,equipment,
+Item;id·REFERABLE,name·STRING,description·STRING,;
+inventory;id·REFERABLE,item·REFERENCE,;Item,
+equipment;id·REFERABLE,item·REFERENCE,;Item,

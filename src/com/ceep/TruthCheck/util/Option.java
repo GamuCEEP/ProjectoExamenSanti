@@ -1,5 +1,8 @@
 package com.ceep.TruthCheck.util;
-
+/**
+ * Representa una opcion de un menu
+ * @author Alumno Mañana
+ */
 public class Option{
 	
 	String key;

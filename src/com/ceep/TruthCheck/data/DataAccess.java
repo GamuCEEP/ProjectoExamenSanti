@@ -6,7 +6,10 @@ import java.util.List;
 import com.ceep.TruthCheck.data.txtDatabase.Storable;
 import com.ceep.TruthCheck.exceptions.*;
 import com.ceep.TruthCheck.exceptions.TXT.*;
-
+/**
+ * Interfaz que permite acceder a los datos de la base de datos
+ * @author Alumno Mañana
+ */
 public interface DataAccess {
 	/**
 	 * Selecciona una base de datos y lo prepara todo para el uso de esta
@@ -36,7 +39,6 @@ public interface DataAccess {
 	/**
 	 * Crea una tabla en una base de datos dada
 	 * 
-	 * @param database nombre de la base de datos
 	 * @param table    tabla que se va a crear
 	 * @throws WriteException
 	 * @throws NoDatabaseSelectedException
@@ -53,7 +55,6 @@ public interface DataAccess {
 	/**
 	 * Borra una tabla de la base de datos
 	 * 
-	 * @param database nombre de la base de datos
 	 * @param table    tabla de la base de datos
 	 * @throws AccessException
 	 * @throws WriteException

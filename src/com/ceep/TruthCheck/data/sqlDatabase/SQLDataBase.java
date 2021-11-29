@@ -41,24 +41,22 @@ public class SQLDataBase implements DataBase{
 
 	@Override
 	public void createDatabase(String database_name) throws WriteException {
-		Connection conn = getConnection();
-		
-		PreparedStatement stmt = conn.prepareStatement(CREATE_DATABASE);
-		
-		stmt.setString(1, database_name);
-		stmt.setString(2, database_name);
-		
-		stmt.execute();
-		
-		
+//		Connection conn = getConnection();
+//		
+//		PreparedStatement stmt = conn.prepareStatement(CREATE_DATABASE);
+//		
+//		stmt.setString(1, database_name);
+//		stmt.setString(2, database_name);
+//		
+//		stmt.execute();
 	}
 
 	@Override
 	public void createTable(String database_name, String SQL) throws WriteException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement(SQL);
-		
-		stmt.execute();
+//		Connection conn = getConnection();
+//		PreparedStatement stmt = conn.prepareStatement(SQL);
+//		
+//		stmt.execute();
 		
 	}
 
@@ -104,4 +102,9 @@ public class SQLDataBase implements DataBase{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public boolean exists(String file) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

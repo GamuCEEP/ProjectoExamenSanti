@@ -35,6 +35,7 @@ public class TXTDataAccess implements DataAccess{
 	}
 
 	
+        @Override
 	public void selectDatabase(String database) throws ReadException, DatabaseNotFoundException {
 		if (DB.searchData(ROOT, CONFIG, database).size() > 0) {
 			selectedDatabase = database;
@@ -48,6 +49,7 @@ public class TXTDataAccess implements DataAccess{
 	}
 
 	
+        @Override
 	public void createDatabase(String database) throws WriteException {
 		DB.createDatabase(Paths.get(ROOT, database).toString());
 		selectedDatabase = database;
@@ -61,6 +63,7 @@ public class TXTDataAccess implements DataAccess{
 	}
 
 	
+        @Override
 	public void deleteDatabase() throws AccessException, WriteException, ReadException, NoDatabaseSelectedException {
 
 		if (selectedDatabase == null)
@@ -74,6 +77,7 @@ public class TXTDataAccess implements DataAccess{
 	}
 
 	
+        @Override
 	public void createTable(Table table) throws WriteException, NoDatabaseSelectedException {
 		if (selectedDatabase == null)
 			throw new NoDatabaseSelectedException();
@@ -86,6 +90,7 @@ public class TXTDataAccess implements DataAccess{
 	}
 
 	
+        @Override
 	public void createTables(Table... tables) throws WriteException, NoDatabaseSelectedException {
 		for (Table t : tables) {
 			createTable(t);
@@ -93,6 +98,7 @@ public class TXTDataAccess implements DataAccess{
 	}
 
 	
+        @Override
 	public void deleteTable(Table table)
 			throws AccessException, WriteException, ReadException, NoDatabaseSelectedException {
 		if (selectedDatabase == null)
@@ -100,7 +106,7 @@ public class TXTDataAccess implements DataAccess{
 
 		String database = selectedDatabase;
 
-		DB.deleteTable(database, table.getTableName());
+		DB.deleteTable(getPath(database), table.getTableName());
 
 		DB.removeData(getPath(database), CONFIG, DBConversor.toDBString(table));
 	}
@@ -129,6 +135,7 @@ public class TXTDataAccess implements DataAccess{
 	}
 
 	
+        @Override
 	public void addEntry(Table table, Storable entry)
 			throws TypeException, WriteException, NoDatabaseSelectedException {
 		if (selectedDatabase == null)
@@ -143,31 +150,37 @@ public class TXTDataAccess implements DataAccess{
 	}
 
 	
+        @Override
 	public List<String> listDatabases() throws ReadException {
 		return DB.readData(ROOT, CONFIG);
 	}
 
 	
+        @Override
 	public HashMap<String, Table> listTables() throws ReadException {
 
 		return tables;
 	}
 
 	
+        @Override
 	public List<String> listEntries(Table table) throws ReadException {
 		return DB.readData(getPath(selectedDatabase), table.getTableName());
 	}
 
 	
+        @Override
 	public void modifyEntry(Table table, String search, String newEntry) throws WriteException, ReadException {
-		DB.modifyData(selectedDatabase, table.getTableName(), search, newEntry);
+		DB.modifyData(getPath(selectedDatabase), table.getTableName(), search, newEntry);
 	}
 
 	
+        @Override
 	public void removeEntry(Table table, String search) throws WriteException, ReadException {
-		DB.removeData(selectedDatabase, table.getTableName(), search);
+		DB.removeData(getPath(selectedDatabase), table.getTableName(), search);
 	}
 
+        @Override
 	public String getSelectedDatabase() {
 		return selectedDatabase;
 	}

@@ -1,7 +1,10 @@
 package com.ceep.TruthCheck.data;
 
 import com.ceep.TruthCheck.data.txtDatabase.Storable;
-
+/**
+ * Representa un registro de una tabla de enlace
+ * @author Alumno Mañana
+ */
 public class LinkTable implements Storable{
 
 	private int key1;
